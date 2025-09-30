@@ -1,1080 +1,1027 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis Sejarah Indonesia 40 Soal</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Custom styles for better readability and aesthetics */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-        }
-        .question-container {
-            border-left: 4px solid #3b82f6; /* Blue border for emphasis */
-            padding-left: 1rem;
-        }
-        .option-label {
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .option-label:hover {
-            background-color: #eff6ff; /* Light blue on hover */
-        }
-        input[type="radio"]:checked + .option-label,
-        input[type="checkbox"]:checked + .option-label {
-            background-color: #dbeafe; /* Lighter blue when checked */
-            border-color: #3b82f6;
-            font-weight: 600;
-        }
-        /* Style untuk Message Box */
-        #messageBox {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            max-width: 300px;
-        }
-        .message-item {
-            padding: 1rem;
-            margin-bottom: 0.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            transition: opacity 0.3s ease-out;
-            opacity: 1;
-        }
-        .message-success { background-color: #d1fae5; color: #065f46; border: 1px solid #10b981; }
-        .message-error { background-color: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kuis Sejarah Interaktif — 40 Soal (CBT Style)</title>
+  <style>
+    :root{
+      --bg:#f3f6fb;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#0b6b8f;
+      --success:#2e7d32;
+      --danger:#c62828;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:var(--bg);
+      color:#111827;
+      padding:20px;
+      display:flex;
+      justify-content:center;
+    }
+    .wrap{
+      width:100%;
+      max-width:920px;
+    }
+    header{
+      text-align:left;
+      margin-bottom:14px;
+    }
+    h1{margin:0;font-size:20px}
+    .card{
+      background:var(--card);
+      border-radius:12px;
+      padding:18px;
+      box-shadow:0 6px 22px rgba(13, 38, 63, 0.07);
+    }
+    #startBox{display:flex;gap:12px;align-items:center;}
+    input[type="text"]{
+      width:100%;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid #e6eef5;
+      font-size:15px;
+    }
+    button.btn{
+      padding:10px 14px;
+      border-radius:10px;
+      border:0;
+      cursor:pointer;
+      background:var(--accent);
+      color:white;
+      font-weight:600;
+    }
+    .meta{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      margin-top:12px;
+    }
+    .progress{
+      height:10px;
+      background:#eef2f7;
+      border-radius:999px;
+      overflow:hidden;
+      flex:1;
+      margin-left:8px;
+    }
+    .progress > i{
+      display:block;height:100%;background:linear-gradient(90deg,var(--accent),#06a6d2);
+      width:0%;
+    }
+    .question-area{margin-top:18px;text-align:left;}
+    .desc{font-size:13px;color:var(--muted);margin-bottom:8px}
+    .q-text{font-weight:700;margin-bottom:12px}
+    .options{display:flex;flex-direction:column;gap:10px}
+    .opt-btn{
+      padding:12px;
+      border-radius:10px;
+      border:1px solid #e6eef5;
+      background:#fafafb;
+      cursor:pointer;
+      text-align:left;
+      transition:all .15s;
+    }
+    .opt-btn:hover{transform:translateY(-2px)}
+    .opt-btn.correct{background:#e6f4ea;border-color:#b7e1c8}
+    .opt-btn.wrong{background:#fff0f0;border-color:#f0b4b4}
+    .opt-btn.disabled{cursor:default;opacity:0.9}
+    .explain{
+      margin-top:12px;
+      padding:12px;
+      border-radius:8px;
+      background:#f8fafc;
+      border:1px solid #eef3f8;
+      font-size:14px;
+    }
+    .explain .ok{color:var(--success);font-weight:700}
+    .explain .bad{color:var(--danger);font-weight:700}
+    .controls{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:12px}
+    .small{font-size:13px;color:var(--muted)}
+    .end-screen{text-align:center;padding:18px}
+    .center{display:flex;justify-content:center}
+    /* responsive */
+    @media (max-width:640px){
+      .meta{flex-direction:column;align-items:flex-start}
+    }
+  </style>
 </head>
-<body class="p-4 sm:p-8">
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Kuis Sejarah Interaktif — 40 Soal</h1>
+      <p class="small">Format: satu soal per layar. Klik jawaban untuk melihat benar/salah & penjelasan. Setelah itu bisa tekan Next.</p>
+    </header>
 
-    <div id="app" class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-xl shadow-2xl">
-        <header class="mb-8 text-center border-b pb-4">
-            <h1 class="text-3xl font-extrabold text-gray-800">Kuis Sejarah Indonesia</h1>
-            <p id="pageTitle" class="text-lg text-blue-600 mt-1"></p>
-        </header>
+    <div id="app" class="card">
+      <!-- START / INPUT NAMA -->
+      <div id="startScreen">
+        <div id="startBox">
+          <input id="studentName" type="text" placeholder="Masukkan nama siswa..." />
+          <button id="startBtn" class="btn">Mulai Kuis</button>
+        </div>
+        <div class="meta">
+          <div class="small">Jumlah soal: <strong>40</strong></div>
+          <div style="display:flex;align-items:center"><div class="small">Kemajuan</div><div class="progress"><i id="progBar"></i></div></div>
+        </div>
+      </div>
 
-        <!-- Konten Kuis akan dirender di sini -->
-        <div id="content">
-            <!-- Loading message or intro screen will appear first -->
+      <!-- QUIZ -->
+      <div id="quizScreen" style="display:none">
+        <div class="question-area">
+          <div class="desc" id="qDesc"></div>
+          <div class="q-text" id="qText"></div>
+          <div class="options" id="options"></div>
+
+          <div id="multiSubmitWrap" style="display:none;margin-top:10px">
+            <button id="submitMulti" class="btn">Kirim Jawaban</button>
+          </div>
+
+          <div id="explanation" style="display:none" class="explain"></div>
         </div>
 
-        <!-- Tombol navigasi (dirender oleh JS) -->
-        <div id="navigation" class="mt-8 pt-4 border-t flex justify-end">
-            <button id="submitButton" onclick="submitQuiz()" class="hidden bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300">
-                Kirim Hasil & Selesai
-            </button>
+        <div class="controls">
+          <div class="small">Soal <span id="curIndex">1</span> / 40</div>
+          <div style="display:flex;gap:8px">
+            <button id="nextBtn" class="btn" style="display:none">Next ➜</button>
+            <button id="quitBtn" class="btn" style="background:#6b7280">Batal</button>
+          </div>
         </div>
+      </div>
 
-        <!-- Modal untuk loading saat kirim data -->
-        <div id="loadingModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden items-center justify-center z-50">
-            <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center">
-                <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <p class="mt-3 text-gray-700 font-semibold">Mengirim data hasil kuis...</p>
-            </div>
-        </div>
+      <!-- END -->
+      <div id="endScreen" style="display:none" class="end-screen">
+        <!-- filled dynamically -->
+      </div>
     </div>
-    
-    <!-- Message Box untuk menampilkan notifikasi non-blocking -->
-    <div id="messageBox"></div>
-
-    <script>
-        // =================================================================
-        // 1. KONFIGURASI URL & DATA KUIS (JavaScript Klien)
-        // =================================================================
-        // URL WEB APP APPS SCRIPT ANDA
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzdd2IGnCPjusGf38hm4pxdhycF6jUEZA4P6TmzUHCqFHXqkO4rXizuqGZPBlkg_aJF/exec'; 
-        
-        // 2. Question Data: Jawaban Benar dan Penjelasan LENGKAP (40 SOAL)
-        const quizQuestions = [
-            // --- Q1 & Q2 CONTEXT: Pameran Sunting ---
-            {
-                qNum: 1,
-                type: 'mc',
-                topic: 'Teks berikut untuk menjawab soal nomor 1 dan 2. Museum Nasional Indonesia menggelar pameran Sunting: Jejak Perempuan Indonesia Penggerak Perubahan hingga Juli 2025. Pameran ini dibuka bertepatan dengan peringatan hari Kartini. Pameran Sunting terbagi menjadi tiga zona utama, yaitu zona 1 menampilkan 14 tokoh perempuan pemimpin dan pejuang, zona 2 menampilkan 29 tokoh yang berperan dalam dinamika sosial politik Indonesia, serta zona 3 berisi 53 tokoh perempuan yang berjasa dalam bidang pendidikan, seni, kesehatan, diplomasi, dan teknologi. Sebanyak tujuh belas organisasi perempuan juga ditampilkan sebagai bentuk perjuangan kolektif perempuan Indonesia. Selain itu, pameran menyuguhkan artefak lintas budaya dan lintas waktu yang mencakup arsip, karya sastra, karya seni, dan dokumentasi mengenai rekam jejak perjuangan perempuan Indonesia.',
-                text: 'Pameran Sunting menampilkan tokoh-tokoh perempuan dari berbagai latar belakang dan peran aktif perempuan dalam sejarah Indonesia. Bagaimana keterkaitan perjuangan perempuan pada masa lalu dengan dinamika sosial budaya perempuan indonesia saat ini?',
-                options: [
-                    'A. Perjuangan perempuan masa lalu menjadi landasan bagi peran aktif perempuan di berbagai bidang saat ini.',
-                    'B. Perempuan masa kini aktif menyuarakan hak-haknya karena peran laki-laki dalam masyarakat mulai melemah.',
-                    'C. Semangat perjuangan tokoh perempuan dahulu mendorong berkembangnya tren perempuan mandiri masa kini.',
-                    'D. Perjuangan perempuan masa kini lebih modern dan tidak memiliki hubungan dengan sejarah perjuangan perempuan.',
-                    'E. Perjuasaan perempuan masa kini lebih fokus pada kegiatan budaya dan kurang berkontribusi terhadap perubahan politik.'
-                ],
-                answer: 'A', 
-                explanation: 'Perjuangan tokoh perempuan di masa lalu meletakkan fondasi kuat bagi perempuan Indonesia untuk berperan aktif di berbagai sektor kehidupan saat ini, menunjukkan adanya kebertanjutan sejarah.' 
-            },
-            {
-                qNum: 2,
-                type: 'tf',
-                topic: 'Lanjutan konteks soal 1: Museum Nasional Indonesia menggelar pameran Sunting.',
-                text: 'Teks di atas mengandung konsep berpikir sejarah. Pilihlah Benar atau Salah pada pernyataan berikut yang menunjukan konsep berfikir sejarah',
-                statements: [
-                    'Pameran Sunting tidak disusun secara kronologis.',
-                    'Pameran Sunting menunjukkan kebertanjutan peran perempuan dalam berbagai bidang',
-                    'Peristiwa yang dialami oleh tokoh-tokoh perempuan dalam pameran memiliki pola yang sama.'
-                ],
-                answers: ['Salah', 'Benar', 'Salah'], 
-                explanation: 'Konsep berpikir sejarah mencakup kesinambungan (kebertanjutan) peran perempuan lintas waktu (pernyataan 2). Pernyataan 1 tidak dapat dipastikan hanya dari teks. Pernyataan 3 tidak tepat karena tokoh berbeda memiliki pola yang beragam.'
-            },
-            
-            // --- Q3 CONTEXT: Tanam Paksa vs Swasembada ---
-            {
-                qNum: 3,
-                type: 'ms',
-                topic: 'Pada masa kolonial Belanda, rakyat diwajibkan menanam tanaman ekspor, seperti kopi, tebu, dan nila melalui sistem tanam paksa. Setelah Indonesia merdeka, kebijakan pertanian mengalami perubahan besar. Pemerintah mulai menerapkan kebijakan yang lebih berorientasi pada kesejahteraan petani melalui program swasembada pangan dan koperasi pertanian.',
-                text: 'Manakah pernyataan yang menunjukkan perubahan kebijakan pertanian dari masa kolonial ke masa kemerdekaan? Jawaban benar lebih dari satu.',
-                options: [
-                    'Penerapan koperasi pertanian untuk menggantikan sistem tanam paksa.',
-                    'Perubahan kebijakan pertanian dari tanam paksa ke swasembada pangan.',
-                    'Pergeseran fokus kebijakan dari kepentingan kolonial ke kepentingan nasional.',
-                    'Penggunaan teknologi modern dalam pertanian sejak masa penjajahan Belanda.',
-                    'Penggunaan lahan pertanian rakyat dari masa kolonial hingga masa kemerdekaan.'
-                ],
-                answers: [true, true, true, false, false], 
-                explanation: 'Perubahan utama adalah dari eksploitasi (Tanam Paksa) ke kesejahteraan rakyat (Koperasi, Swasembada) dan pergeseran fokus dari kolonial ke nasional.'
-            },
-
-            // --- Q4 & Q5 CONTEXT: UU Agraria 1870 & Kopi Pasuruan ---
-            {
-                qNum: 4,
-                type: 'mc',
-                topic: 'Teks berikut untuk menjawab soal nomor 4 dan 5. Pada masa pemerintahan kolonial Belanda, Keresidenan Pasuruan menjadi salah satu wilayah budi daya tanaman kopi yang berkembang pesat. Berdasarkan data dalam buku Village Java Under the Cultivation System yang diambil dari Kultuur Verslag 1834, terdapat sekitar 17.775 petani kopi di wilayah Keresidenan Pasuruan dengan jumlah pohon kopi mencapai 10.124.145. Jumlah tersebut terus meningkat dari tahun ke tahun sejak 1836 hingga 1844. Memasuki 1870-an terbit Undang-Undang Agraria 1870 yang mengatur pemberian hak sewa atas tanah yang belum digarap kepada pengusaha swasta. Dengan terbitnya peraturan ini banyak pengusaha asing yang mendirikan perkebunan dan ikut meramaikan pasar ekonomi. Selain itu, Undang-Undang Agraria mendorong pembukaan lahan perkebunan di daerah pergunungan.',
-                text: 'Kamu ingin meneliti lebih dalam tentang dampak diterbitkannya Undang-Undang Agraria 1870 terhadap perkebunan kopi di Keresidenan Pasuruan. Manakah langkah paling tepat untuk mendukung penelitianmu?',
-                options: [
-                    'A. Menguji sampel tanah dari lahan bekas perkebunan kopi di Pasuruan.',
-                    'B. Menggunakan peta kontemporer untuk menunjukkan lokasi perdagangan kopi.',
-                    'C. Menyebarkan survei daring kepada masyarakat Pasuruan mengenai sejarah kopi.',
-                    'D. Melakukan observasi langsung ke kebun kopi saat ini dan mewawancarai petani lokal.',
-                    'E. Membandingkan laporan kolonial dan arsip kepemilikan tanah sebelum dan sesudah 1870.'
-                ],
-                answer: 'E', 
-                explanation: 'Untuk meneliti dampak UU tahun 1870, sumber paling tepat adalah arsip dan laporan dari masa sebelum dan sesudah 1870 untuk perbandingan (metode historis).'
-            },
-            {
-                qNum: 5,
-                type: 'ms',
-                topic: 'Lanjutan konteks soal 4: UU Agraria 1870 dan Keresidenan Pasuruan.',
-                text: 'Berdasarkan teks, manakah pernyataan yang menunjukkan contoh sumber primer dalam penulisan sejarah? Pilihlah jawaban yang benar! Jawaban benar lebih dari satu.',
-                options: [
-                    'Data peningkatan jumlah pohon kopi antara 1836-1844.',
-                    'Hasil wawancara tahun 2020 dengan keturunan petani kopi di Pasuruan.',
-                    'Buku sejarah modern yang mengulas sistem tanam paksa di Jawa Timur.',
-                    'Laporan Kultuur Verslag 1834 tentang jumlah petani dan pohon kopi di Pasuruan.',
-                    'Naskah Undang-Undang Agraria 1870 yang diterbitkan oleh pemerintah kolonial Belanda.'
-                ],
-                answers: [true, false, false, true, true], 
-                explanation: 'Sumber primer adalah dokumen asli atau kesaksian langsung dari masa peristiwa, yaitu data periode 1836-1844, Kultuur Verslag 1834, dan naskah UU Agraria 1870.'
-            },
-
-            // --- Q6 CONTEXT: Fungsi Sumber Sejarah ---
-            {
-                qNum: 6,
-                type: 'tf',
-                topic: 'Alya sedang menulis karya tulis sejarah tentang perjuangan rakyat dalam peristiwa Bandung Lautan Api. la mengumpulkan informasi dari berbagai sumber, seperti arsip surat perintah militer, foto dokumentasi peristiwa, serta catatan kesaksian warga yang masih hidup.',
-                text: 'Pilihlah Tepat atau Tidak Tepat untuk setiap pernyataan yang menunjukkan fungsi sumber-sumber tersebut!',
-                statements: [
-                    'Memperkuat opini pribadi penulis sejarah.',
-                    'Mengurangi keragaman perspektif terhadap peristiwa sejarah.',
-                    'Memberikan bukti dan data yang objektif terhadap peristiwa sejarah.'
-                ],
-                answers: ['Tidak Tepat', 'Tidak Tepat', 'Tepat'], 
-                explanation: 'Fungsi sumber sejarah adalah untuk memberikan bukti objektif (tepat). Sumber tidak boleh digunakan untuk memperkuat opini pribadi atau mengurangi keragaman perspektif (tidak tepat).'
-            },
-
-            // --- Q7 & Q8 CONTEXT: Penyebaran Hindu-Buddha & Perdagangan ---
-            {
-                qNum: 7,
-                type: 'ms',
-                topic: 'Teks berikut untuk menjawab soal nomor 7 dan 8. Kedatangan agama Hindu dan Buddha merupakan salah satu babak penting dalam sejarah awal Nusantara. Perdagangan maritim dan perkembangan kerajaan Hindu-Buddha sangat berhubungan erat. Kerajaan seperti Kutai, Tarumanegara, dan Sriwijaya berkembang di lokasi-lokasi strategis, menguasai pelabuhan, memungut pajak, dan menggunakan kekayaan untuk membangun tempat peribadatan, membiayai biksu/brahmana, serta mendukung pengembangan seni dan sastra keagamaan. Perdagangan maritim menjadi fondasi bagi pusat-pusat kebudayaan Hindu-Buddha di Asia Tenggara.',
-                text: 'Apa peran jalur perdagangan bagi penyebaran agama Hindu-Buddha di Nusantara? Pilihlah jawaban yang benar! Jawaban benar lebih dari satu.',
-                options: [
-                    'Jalur perdagangan maritim menjadi media bagi perpindahan individu, seperti pedagang, biksu, dan cendekiawan.',
-                    'Komoditas dagang seperti rempah-rempah secara langsung digunakan sebagai alat tukar untuk mengajarkan ajaran agama.',
-                    'Interaksi di pelabuhan pelabuhan memfasilitasi pertukaran budaya dan ideologi di antara berbagai bangsa.',
-                    'Para pedagang mendirikan candi dan wihara di setiap pelabuhan sebagai pusat penyebaran agama secara massal.',
-                    'Jalur perdagangan mempermudah akses bagi masyarakat Nusantara untuk belajar langsung ke India dan kembali menyebarkannya.'
-                ],
-                answers: [true, false, true, false, false], 
-                explanation: 'Jalur perdagangan memfasilitasi pertukaran individu (pedagang, biksu) dan pertukaran budaya/ideologi di pelabuhan (sesuai teks).'
-            },
-            {
-                qNum: 8,
-                type: 'tf',
-                topic: 'Lanjutan konteks soal 7: Penyebaran Hindu-Buddha dan Perdagangan Maritim.',
-                text: 'Pilihlah Benar atau Salah untuk setiap pernyataan berikut sesuai dengan informasi pada teks!',
-                statements: [
-                    'Perdagangan hanya membawa keuntungan ekonomi tanpa memperkaya khazanah budaya masyarakat Nusantara.',
-                    'Jalur rempah memainkan peran penting dalam menarik para pelaut dan pedagang dari India sehingga memfasilitasi masuknya pengaruh Hindu-Buddha.',
-                    'Teori Brahmana dan Waisya merupakan dua dari beberapa teori yang menjelaskan bahwa agama Hindu-Buddha masuk ke Nusantara melalui jalur militer.'
-                ],
-                answers: ['Salah', 'Benar', 'Salah'], 
-                explanation: 'Perdagangan juga memperkaya budaya (salah). Jalur rempah/maritim penting (benar). Teori Brahmana dan Waisya tidak menjelaskan masuknya agama melalui jalur militer (salah).'
-            },
-
-            // --- Q9 CONTEXT: Peran Raja Majapahit ---
-            {
-                qNum: 9,
-                type: 'mc',
-                topic: 'Soal ini merujuk pada kepercayaan konsep Dewa-Raja dalam kebudayaan Hindu-Buddha di Nusantara.',
-                text: 'Manakah peran raja dalam pemerintahan Majapahit berdasarkan konsep Dewa-Raja?',
-                options: [
-                    'A. Pemimpin agama', 'B. Panglima perang', 'C. Perwujudan dewa', 'D. Penjaga alam semesta', 'E. Pemimpin seluruh rakyat'
-                ],
-                answer: 'C', 
-                explanation: 'Konsep Dewa-Raja menganggap raja sebagai perwujudan dewa (misalnya Wisnu atau Syiwa) yang memerintah di dunia.'
-            },
-
-            // --- Q10 CONTEXT: Penyebaran Islam Melalui Perkawinan ---
-            {
-                qNum: 10,
-                type: 'mc',
-                topic: 'Soal ini merujuk pada salah satu saluran penyebaran Islam, yaitu perkawinan, yang sering terjadi antara pedagang Muslim dan bangsawan lokal.',
-                text: 'Pada awal perkembangan islam di Nusantara, para pedagang muslim Timur Tengah melakukan perkawinan dengan bangsawan lokal. Manakah pernyataan yang menunjukkan dampak perkawinan tersebut?',
-                options: [
-                    'A. Para penguasa lokal mendapatkan keuntungan ekonomis', 
-                    'B. Pedagang muslim berpotensi menjadi pejabat tinggi kerajaan.', 
-                    'C. Terjadinya konsesi dagang yang merugikan para penguasa lokal.', 
-                    'D. Banyak bangsawan lokal melakukan migrasi ke negara-negara Timur Tengah,', 
-                    'E. Banyak keluarga kerajaan yang masuk islam dan melahirkan generasi muslim baru.'
-                ],
-                answer: 'E', 
-                explanation: 'Saluran perkawinan bertujuan memperluas pengaruh Islam secara damai dan politis, sehingga berdampak pada lahirnya generasi muslim baru dari kalangan bangsawan.'
-            },
-
-            // --- Q11 & Q12 CONTEXT: Kerajaan Samudera Pasai ---
-            {
-                qNum: 11,
-                type: 'tf',
-                topic: 'Teks berikut untuk menjawab soal nomor 11 dan 12. Kerajaan Samudera Pasai yang terletak di pesisir utara Pulau Sumatra mengukir kejayaan Islam pada abad XIII-XV Masehi. Kejayaan ini didukung tiga pilar: jaringan maritim, sistem pemerintahan terstruktur, dan penyebaran Islam. Sultan Malik as-Saleh sebagai pendiri berperan penting mengorganisasi pemerintahan dan memperkenalkan Islam. Samudera Pasai memiliki birokrasi efektif untuk mengatur perdagangan, perpajakan, dan urusan pemerintahan. Sistem hukum Islam (syariat) diterapkan dalam kehidupan sehari-hari, termasuk transaksi perdagangan dan penyelesaian sengketa.',
-                text: 'Pilihlah Benar atau Salah pada pernyataan berikut berdasar informasi pada teks!',
-                statements: [
-                    'Letak geografis yang strategis di jalur perdagangan antara Timur dan Barat menjadi salah satu faktor kunci kejayaan maritim Kerajaan Samudera Pasai.',
-                    'Peran Sultan Malik as-Saleh merupakan satu-satunya faktor di balik seluruh kejayaan Samudera Pasai dari ekonomi hingga penyebaran agama.',
-                    'Hukum syariat yang diterapkan di Samudera Pasai tidak hanya terbatas pada urusan agama, tetapi juga mengatur aspek-aspek kehidupan lain seperti perdagangan dan penyelesaian sengketa.'
-                ],
-                answers: ['Benar', 'Salah', 'Benar'], 
-                explanation: 'Teks menyebut tiga pilar, sehingga Sultan bukan satu-satunya faktor (salah). Teks secara eksplisit menyebut syariat mengatur perdagangan dan sengketa (benar).'
-            },
-            {
-                qNum: 12,
-                type: 'ms',
-                topic: 'Lanjutan konteks soal 11: Tiga Pilar Kejayaan Samudera Pasai.',
-                text: 'Keterkaitan antara tiga pilar kejayaan Kerajaan Samudera Pasai begitu kuat sehingga satu pilar akan memengaruhi pilar lainnya. Manakah pernyataan yang menunjukkan hubungan timbal balik antara aspek jaringan maritim yang luas dan aktivitas penyebaran agama Islam? Jawaban benar lebih dari satu.',
-                options: [
-                    'Jaringan maritim yang luas menyediakan jalur bagi para ulama dan pedagang muslim untuk menyebarkan ajaran Islam.',
-                    'Kejayaan maritim mendorong Samudera Pasai untuk mengirim ekspedisi militer guna menyebarkan Islam ke wilayah lain.',
-                    'Ajaran Islam yang diterapkan di Samudera Pasai memberikan kode etik dan kepercayaan yang menarik lebih banyak pedagang asing.',
-                    'Penyebaran Islam menghasilkan banyak tenaga kerja ahli di bidang maritim sehingga memperkuat jaringan perdagangan.',
-                    'Sultan memanfaatkan pajak dari perdagangan maritim untuk membiayai pembangunan masjid di seluruh Sumatra.'
-                ],
-                answers: [true, false, true, false, true], 
-                explanation: 'Jalur maritim memfasilitasi ulama (benar). Etika Islam menarik pedagang (benar). Pajak dari maritim membiayai kegiatan keagamaan (benar, meski teks menyebut pembangunan tempat peribadatan secara umum).'
-            },
-            
-            // --- Q13 CONTEXT: Dampak Kolonialisme (General) ---
-            {
-                qNum: 13,
-                type: 'tf',
-                topic: 'Kedatangan bangsa Erupa ke Nusantara berdampak pada politik, sosial, dan budaya. Monopoli perdagangan, tanam paksa mengubah struktur agraria. Dalam bidang sosial, kasta dipertahankan, pendidikan dibatasi. Namun, sistem birokrasi, infrastruktur, dan pengenalan teknologi modern menjadi warisan kolonial yang berdampak jangka panjang.',
-                text: 'Pilihlah Benar atau Salah pada pernyataan terkait dampak kolonialisme bangsa Eropa terhadap Nusantara!',
-                statements: [
-                    'Kebijakan politik etis sepenuhnya berhasil meningkatkan kesejahteraan bumiputra.',
-                    'Pendidikan masa kolonial dirancang untuk mendukung munculnya kesadaran nasional rakyat.',
-                    'Struktur birokrasi modern yang diperkenalkan Belanda berdampak pada sistem administrasi masa kini.'
-                ],
-                answers: ['Salah', 'Salah', 'Benar'], 
-                explanation: 'Politik Etis tidak sepenuhnya berhasil (salah). Pendidikan kolonial dirancang untuk kepentingan kolonial (salah). Struktur birokrasi modern adalah warisan kolonial yang berdampak hingga kini (benar).'
-            },
-
-            // --- Q14 & Q15 CONTEXT: Motivasi 3G ---
-            {
-                qNum: 14,
-                type: 'ms',
-                topic: 'Teks berikut untuk menjawab soal nomor 14 dan 15. Pada abad ke XV dan XVI bangsa Eropa mulai menjelajah dunia ke Nusantara. Kedatangan mereka dilatarbelakangi oleh semangat 3G (Gold, Glory, dan Gospel). Motivasi ini mendorong perubahan besar dalam struktur sosial, sistem ekonomi kolonial, intervensi politik lokal, dan perubahan budaya di Nusantara.',
-                text: 'Berdasarkan motivasi 3G bangsa Eropa, manakah bentuk keterkaitan antara motivasi dengan tindakan bangsa Eropa di Nusantara? Jawaban benar lebih dari satu.',
-                options: [
-                    'Mendirikan sekolah Eropa untuk menyebarkan nilai-nilai Barat secara massal.',
-                    'Memaksa penduduk lokal untuk menganut agama Katolik melalui misi zending.',
-                    'Menerapkan sistem pajak progresif oleh VOC untuk mendorong kesejahteraan ekonomi rakyat.',
-                    'Mengangkat raja boneka dan pengaruh terhadap suksesi kerajaan lokal untuk memperluas dominasi.',
-                    'Mendirikan benteng dagang dan markas militer di wilayah strategis untuk melindungi jalur perdagangan.'
-                ],
-                answers: [false, true, false, true, true], 
-                explanation: 'Memaksa agama Katolik adalah Gospel (benar). Mengangkat raja boneka adalah Glory (benar). Mendirikan benteng dagang adalah Gold/Glory (benar).'
-            },
-            {
-                qNum: 15,
-                type: 'tf',
-                topic: 'Lanjutan konteks soal 14: Motivasi 3G dan Dampak Kolonialisme.',
-                text: 'Pilihlah Benar atau Salah pada pernyataan berikut terkait dampak kedatangan bangsa Eropa terhadap dinamika sosial, politik, ekonomi, dan budaya di Nusantara!',
-                statements: [
-                    'Penyebaran agama oleh bangsa Eropa mendorong terjadinya konflik budaya dengan masyarakat lokal.',
-                    'Dominasi politik bangsa Eropa menyebabkan lahirnya pemerintahan raja boneka di beberapa kerajaan.',
-                    'Campur tangan kolonial di bidang budaya memperkuat identitas budaya lokal secara menyeluruh.'
-                ],
-                answers: ['Benar', 'Benar', 'Salah'], 
-                explanation: 'Intervensi budaya sering memicu konflik (benar). Intervensi politik melahirkan raja boneka (benar). Budaya lokal terpinggirkan, tidak diperkuat (salah).'
-            },
-
-            // --- Q16 CONTEXT: Sistem Tanam Paksa ---
-            {
-                qNum: 16,
-                type: 'mc',
-                topic: 'Sistem tanam paksa (cultuurstelsel) diberlakukan Belanda pada 1830 untuk mengisi kas negara. Rakyat diwajibkan menanam komoditas ekspor. Dalam praktiknya terjadi penyimpangan, menyebabkan kelaparan dan penderitaan luas, meskipun berhasil bagi keuangan Belanda.',
-                text: 'Kebijakan alternatif apa yang tepat untuk menggantikan tanam paksa agar tujuan keuangan pemerintah tetap tercapai tanpa menimbulkan penderitaan rakyat?',
-                options: [
-                    'A. Mengatur kuota hasil bumi dari rakyat, tetapi memberi kebebasan jenis tanaman yang ditanam.',
-                    'B. Mewajibkan petani menanam komoditas ekspor di tanah kosong yang belum dikelola secara intensif.',
-                    'C. Memusatkan tanam paksa di wilayah subur dan menghindari penerapannya di daerah rawan bencana.',
-                    'D. Mengganti kewajiban menanam komoditas dengan kerja wajib secara bergilir di pabrik milik pemerintah.',
-                    'E. Memberlakukan sistem kontrak sukarela dengan insentif harga tetap bagi petani yang menanam tanaman ekspor.'
-                ],
-                answer: 'E', 
-                explanation: 'Sistem kontrak sukarela dengan insentif (bukan paksaan) adalah pendekatan liberal yang lebih adil dan menggantikan sistem eksploitasi.'
-            },
-
-            // --- Q17 CONTEXT: Dampak Politik Etis ---
-            {
-                qNum: 17,
-                type: 'mc',
-                topic: 'Pada awal abad XX Belanda menerapkan politik etis (irigasi, edukasi, transmigrasi). Tujuan awalnya meningkatkan kesejahteraan demi kepentingan kolonial. Namun, program edukasi melahirkan golongan intelektual bumiputra yang mendirikan organisasi modern (Budi Utomo, Sarekat Islam, Indische Partij) yang menjadi tonggak awal pergerakan nasional.',
-                text: 'Manakah simpulan yang tepat berdasarkan teks?',
-                options: [
-                    'A. Politik etis gagal meningkatkan kesejahteraan rakyat.',
-                    'B. Politik etis menurunkan kesadaran politik bangsa Indonesia.',
-                    'C. Politik etis menghapus seluruh kebijakan diskriminatif kolonial.',
-                    'D. Politik etis melahirkan kaum terpelajar yang menjadi pelopor pergerakan nasional.',
-                    'E. Politik etis berhasil mempercepat kemerdekaan Indonesia melalui program pendidikan.'
-                ],
-                answer: 'D', 
-                explanation: 'Teks secara eksplisit menyatakan program edukasi melahirkan golongan intelektual yang menjadi tonggak pergerakan nasional.'
-            },
-
-            // --- Q18 & Q19 CONTEXT: Perlawanan Intelektual (Medan Prijaji) ---
-            {
-                qNum: 18,
-                type: 'mc',
-                topic: 'Teks berikut untuk menjawab soal nomor 18 dan 19. Pada awal abad XX, perlawanan bergeser dari fisik ke intelektual. Tirto Adhi Soerjo melalui surat kabar Medan Prijaji (terbit 1907) menjadi media perjuangan politik dan sosial untuk menyuarakan kritik terhadap ketidakadilan kolonial. Tirto mendirikan perusahaan pers independen yang dikelola tanpa campur tangan pemerintah. Perlawanan melalui tulisan membuktikan bahwa media massa mampu membangkitkan kesadaran rakyat terhadap kolonialisme.',
-                text: 'Apa bentuk perlawanan bangsa Indonesia terhadap kolonialisme Eropa yang tecermin dari aktivitas Tirto Adhi Soerjo melalui surat kabar Medan Prijaji?',
-                options: [
-                    'A. Pemberontakan bersenjata melawan tentara kolonial.',
-                    'B. Gerakan sabotase ekonomi kolonial di kota-kota besar.',
-                    'C. Perlawanan diplomatik melalui perwakilan di parlemen Belanda.',
-                    'D. Perlawanan melalui media massa untuk membangun kesadaran nasional.',
-                    'E. Kerja sama dengan pengusaha bumiputra untuk melemahkan dominasi Belanda.'
-                ],
-                answer: 'D', 
-                explanation: 'Medan Prijaji adalah surat kabar, media perjuangan utama Tirto adalah pers/tulisan untuk membangkitkan kesadaran rakyat.'
-            },
-            {
-                qNum: 19,
-                type: 'ms',
-                topic: 'Lanjutan konteks soal 18: Perlawanan Intelektual melalui Medan Prijaji.',
-                text: 'Manakah dari pernyataan berikut yang mencerminkan nilai-nilai perjuangan rakyat Indonesia pada masa colonial, sebagaimana cermin dalam kiprah Medan Prijaji? Jawaban lebih dari satu',
-                options: [
-                    'Pers menjadi atat penting dalam menyuarakan keadilan sosial dan kemerdekaan.',
-                    'kepatuhan terhadap penguasa kolonial merupakan bentuk perjuangan yang bijaksana.',
-                    'Kritik terhadan ketidakadilan sosial dihindari untuk menjaga stabilitas pemerintahan kolonial',
-                    'Perlawanan dapat dilakukan melalui pendidikan dan tulisan untuk menggugah kesadaran rakyat',
-                    'Rasa nasionalisme dapat tumbuh melalui penyampaian ide-ide kemerdekaan dalam media cetak'
-                ],
-                answers: [true, false, false, true, true], 
-                explanation: 'Medan Prijaji menyuarakan kritik (benar), melawan ketidakadilan (salah jika dihindari), dan membangkitkan kesadaran melalui tulisan (benar).'
-            },
-
-            // --- Q20 & Q21 CONTEXT: Indische Partij ---
-            {
-                qNum: 20,
-                type: 'ms',
-                topic: 'Teks berikut untuk menjawab soal nomor 20 dan 21. Indische Partij (didirikan oleh Douwes Dekker, Cipto Mangunkusumo, dan Ki Hajar Dewantara) merupakan organisasi politik yang berperan besar dalam perjuangan kemerdekaan. IP menolak kerja sama dengan Belanda (nonkooperatif) dan mendorong rakyat Indonesia untuk berjuang secara mandiri. Tujuannya adalah membangun kesetaraan antara berbagai kelompok masyarakat, terutama menghadapi diskriminasi antara keturunan Belanda dan kaum bumiputra. IP mendapat dukungan dari organisasi lain, seperti Insulinde, Sarekat Islam, dan Budi Utomo. IP juga menyuarakan penolakan terhadap ketidakadilan kolonial melalui poster untuk menyadarkan buruh.',
-                text: 'Berdasarkan teks, manakah pernyataan yang menunjukkan strategi perjuangan Indische Partij dalam melawan kolonialisme? Pilihlah jawaban yang benar! Jawaban benar lebih dari satu.',
-                options: [
-                    'Menjadikan pendidikan Barat sebagai prioritas perjuangan dengan mengesampingkan isu politik,',
-                    'Menolak ketergantungan pada kekuatan asing dan mendorong perjuangan secara mandiri,',
-                    'Mengedepankan kerja sama dengan pemerintah Belanda agar mendapat pengakuan politik.',
-                    'Membangun kesadaran rakyat melalui tulisan, pidato, dan media visual seperti poster.',
-                    'Menggalang dukungan dari organisasi lain untuk memperluas basis perjuangan.'
-                ],
-                answers: [false, true, false, true, true], 
-                explanation: 'IP bersifat nonkooperatif (menolak kerja sama), mendorong perjuangan mandiri (benar), dan menggunakan tulisan/poster (benar), serta menggalang dukungan organisasi lain (benar).'
-            },
-            {
-                qNum: 21,
-                type: 'tf',
-                topic: 'Lanjutan konteks soal 20: Tujuan dan Strategi Indische Partij.',
-                text: 'Pilihlah Benar atau Salah pada pernyataan berikut terkait tujuan berdirinya Indische Partij!',
-                statements: [
-                    'Mempersiapkan pemerintahan kolonial agar lebih demokratis',
-                    'Memperkuat hubungan diplomatik dengan pemerintah Belanda.',
-                    'Membangun kesetaraan antara keturunan Belanda dan kaum bumiputra.'
-                ],
-                answers: ['Salah', 'Salah', 'Benar'], 
-                explanation: 'Tujuan utama IP adalah kesetaraan (benar), bukan memperkuat Belanda atau demokratisasi pemerintahan kolonial.'
-            },
-
-            // --- Q22 CONTEXT: Berakhirnya Kekuasaan Belanda & Jepang ---
-            {
-                qNum: 22,
-                type: 'tf',
-                topic: 'Masuknya Jepang ke Indonesia menandai berakhirnya era kolonialisme Belanda. Diawali Serangan Jepang ke Pearl Harbor (7 Des 1941) dan pendaratan di Indonesia awal 1942. Titik balik kekalahan Belanda adalah direbutnya Pangkalan Udara Kalijati, Subang. Belanda akhirnya menyerah tanpa syarat melalui penandatanganan Kapitulasi Kalijati pada 8 Maret 1942.',
-                text: 'Pilihlah Benar atau Salah pada pernyataan berikut berkaitan dengan berakhirnya kekuasaan Belanda dan masuknya Jepang di indonesia.',
-                statements: [
-                    'Letnan Jenderal Hitashi Imamura menjadi tokoh penting dalam proses penyerahan kekuasaan.',
-                    'Masuknya Jepang di Indonesia diawali dengan serangan ke Pearl Harbor, Hawail',
-                    'Belanda menyerah kepada Jepang melalui perjanjian Renville'
-                ],
-                answers: ['Benar', 'Benar', 'Salah'], 
-                explanation: 'Hitashi Imamura menandatangani Kapitulasi Kalijati (benar). Pearl Harbor adalah titik awal keterlibatan Jepang (benar). Penyerahan Belanda terjadi di Kalijati, bukan Renville (salah).'
-            },
-
-            // --- Q23 & Q24 CONTEXT: Pendudukan Jepang ---
-            {
-                qNum: 23,
-                type: 'mc',
-                topic: 'Teks berikut untuk menjawab soal nomor 23 dan 24. Masa pendudukan Jepang (1942-1945) membawa perubahan besar. Jepang yang datang dengan slogan "Asia untuk Asia" menerapkan kebijakan yang menguntungkan militer Jepang. Dalam bidang ekonomi, Jepang mengeksploitasi sumber daya alam untuk mendukung perang dan menerapkan kerja paksa (romusa). Di bidang sosial politik, Jepang membentuk organisasi seperti Peta dan Seinendan. Pendidikan diubah untuk mendukung ideologi militer Jepang. Kebijakan ini secara tidak langsung menumbuhkan kesadaran nasional.',
-                text: 'Manakah pernyataan berikut yang mencerminkan tujuan utama Jepang dalam penerapan kebijakan ekonomi selama pendudukannya di Indonesia?',
-                options: [
-                    'A. Mendorong pembangunan industri ringan lokal.', 
-                    'B. Meningkatkan ekonomi lokal tanpa kampanye militer.', 
-                    'C. Mendukung swasembada pangan bagi rakyat Indonesia.',
-                    'D. Menyediakan kompensasi penuh kepada petani romusa.', 
-                    'E. Mengeksploitasi sumber daya alam untuk kebutuhan perang Jepang.'
-                ], 
-                answer: 'E', 
-                explanation: 'Teks menyebut Jepang mengeksploitasi sumber daya alam untuk mendukung perang (E).'
-            },
-            {
-                qNum: 24,
-                type: 'ms',
-                topic: 'Lanjutan konteks soal 23: Masa Pendudukan Jepang di Indonesia.',
-                text: 'Meskipun bertujuan untuk kepentingan militer Jepang, kebijakan yang diterapkan secara tidak langsung memberikan dampak positif bagi persiapan kemerdekaan Indonesia. Manakah yang termasuk dampak positif tidak langsung tersebut? Jawaban benar lebih dari satu.',
-                options: [
-                    'Rakyat Indonesia menerima pelatihan militer dasar melalui PETA dan Seinendan.', 
-                    'Jepang memberikan kebebasan penuh pada media massa untuk menyuarakan nasionalisme.', 
-                    'Pembentukan organisasi semi-militer melahirkan pemimpin-pemimpin yang berpengalaman.', 
-                    'Seluruh pemuda bumiputra mendapat kesempatan pendidikan tinggi secara gratis.', 
-                    'Ditinggalkannya sistem birokrasi kolonial Belanda secara menyeluruh.'
-                ],
-                answers: [true, false, true, false, false], 
-                explanation: 'Organisasi semi-militer (PETA, Seinendan) memberikan pelatihan dan pengalaman organisasi yang berguna bagi perjuangan pasca-kemerdekaan.'
-            },
-
-            // --- Q25: Peranan VOC ---
-            {
-                qNum: 25,
-                type: 'mc',
-                topic: 'Vereenigde Oostindische Compagnie (VOC) adalah kongsi dagang Belanda yang diberi hak istimewa (hak oktroi) oleh pemerintah Belanda.',
-                text: 'Hak oktroi yang paling signifikan dampaknya terhadap kedaulatan kerajaan lokal di Nusantara adalah hak untuk...',
-                options: [
-                    'A. Mencetak mata uang sendiri.',
-                    'B. Membangun benteng dan memiliki angkatan perang.',
-                    'C. Melakukan monopoli perdagangan rempah-rempah.',
-                    'D. Mengangkat dan memberhentikan penguasa lokal.',
-                    'E. Menyatakan perang dan mengadakan perjanjian.'
-                ],
-                answer: 'E', 
-                explanation: 'Hak untuk menyatakan perang dan mengadakan perjanjian dengan raja-raja lokal menunjukkan VOC bertindak layaknya sebuah negara, merampas kedaulatan politik kerajaan lokal.'
-            },
-
-            // --- Q26: Kebijakan Deandels ---
-            {
-                qNum: 26,
-                type: 'tf',
-                topic: 'Gubernur Jenderal Herman Willem Daendels (1808-1811) menerapkan kebijakan kerja paksa, pembangunan Jalan Raya Pos, dan penjualan tanah kepada pihak swasta.',
-                text: 'Pilihlah Benar atau Salah: Salah satu tujuan utama Daendels membangun Jalan Raya Pos (Anyer-Panarukan) adalah untuk mempercepat transportasi hasil bumi dan mempermudah pergerakan militer pertahanan dari serangan Inggris.',
-                statements: [
-                    'Jalan Raya Pos dibangun sepenuhnya menggunakan sistem kerja upah yang adil.',
-                    'Tujuan utama pembangunan Jalan Raya Pos adalah pertahanan militer dan ekonomi.',
-                    'Kebijakan Daendels membawa dampak positif berupa modernisasi birokrasi lokal.'
-                ],
-                answers: ['Salah', 'Benar', 'Benar'],
-                explanation: 'Jalan Raya Pos dibangun dengan kerja paksa (rodi) (salah). Tujuannya militer dan ekonomi (benar). Daendels memodernisasi birokrasi (benar).'
-            },
-
-            // --- Q27: Pembubaran VOC ---
-            {
-                qNum: 27,
-                type: 'ms',
-                topic: 'VOC dibubarkan pada 31 Desember 1799. Pembubaran ini disebabkan oleh berbagai faktor internal dan eksternal.',
-                text: 'Manakah faktor-faktor yang menjadi penyebab runtuhnya Vereenigde Oostindische Compagnie (VOC)? Jawaban benar lebih dari satu.',
-                options: [
-                    'Maraknya korupsi di kalangan pegawai VOC.',
-                    'Adanya persaingan dagang yang kuat dari kongsi dagang Inggris (EIC).',
-                    'Kekalahan Belanda dalam perang melawan Perancis di Eropa.',
-                    'Banyaknya biaya perang untuk memadamkan perlawanan rakyat di Nusantara.',
-                    'Kebijakan Tanam Paksa yang gagal meningkatkan keuntungan VOC.'
-                ],
-                answers: [true, true, false, true, false],
-                explanation: 'Korupsi, persaingan dagang, dan biaya perang yang tinggi menjadi penyebab utama kebangkrutan VOC.'
-            },
-
-            // --- Q28: Organisasi Pergerakan Awal ---
-            {
-                qNum: 28,
-                type: 'mc',
-                topic: 'Pergerakan Nasional Indonesia ditandai dengan berdirinya berbagai organisasi modern yang berbeda-beda corak perjuangannya.',
-                text: 'Organisasi pertama yang didirikan oleh bangsa Indonesia yang bersifat modern dan bergerak di bidang sosial-budaya pada tahun 1908 adalah...',
-                options: [
-                    'A. Sarekat Islam', 'B. Indische Partij', 'C. Budi Utomo', 'D. Muhammadiyah', 'E. Perhimpunan Indonesia'
-                ],
-                answer: 'C',
-                explanation: 'Budi Utomo didirikan pada tahun 1908 dan dianggap sebagai pelopor pergerakan nasional modern, fokus awalnya pada pendidikan dan kebudayaan.'
-            },
-
-            // --- Q29: Sarekat Islam (SI) ---
-            {
-                qNum: 29,
-                type: 'ms',
-                topic: 'Sarekat Islam (SI) awalnya bernama Sarekat Dagang Islam (SDI) dan merupakan organisasi massa yang berkembang sangat pesat.',
-                text: 'Manakah yang merupakan tujuan utama dari Sarekat Islam (SI) pada masa awal perkembangannya? Jawaban benar lebih dari satu.',
-                options: [
-                    'Memperkuat persatuan pedagang Muslim pribumi untuk bersaing dengan pedagang asing.',
-                    'Mencapai kemerdekaan Indonesia melalui jalur militer dan revolusi bersenjata.',
-                    'Mengembangkan kehidupan keagamaan Islam.',
-                    'Memberikan bantuan kepada anggota yang mengalami kesulitan ekonomi.',
-                    'Mendirikan negara Islam di Indonesia.'
-                ],
-                answers: [true, false, true, true, false],
-                explanation: 'SI fokus pada persatuan pedagang, keagamaan, dan kesejahteraan anggota.'
-            },
-
-            // --- Q30: Sumpah Pemuda ---
-            {
-                qNum: 30,
-                type: 'tf',
-                topic: 'Kongres Pemuda II pada 28 Oktober 1928 menghasilkan ikrar yang dikenal sebagai Sumpah Pemuda, yang menjadi tonggak penting persatuan nasional.',
-                text: 'Pilihlah Benar atau Salah pada pernyataan berikut terkait Sumpah Pemuda!',
-                statements: [
-                    'Sumpah Pemuda menekankan penggunaan bahasa Indonesia sebagai bahasa persatuan.',
-                    'Sumpah Pemuda adalah hasil kesepakatan seluruh organisasi kepemudaan yang bersifat kedaerahan.',
-                    'Setelah Sumpah Pemuda, pemerintah kolonial Belanda memberikan kebebasan penuh pada organisasi politik.'
-                ],
-                answers: ['Benar', 'Benar', 'Salah'],
-                explanation: 'Sumpah Pemuda menetapkan Bahasa Indonesia (benar) dan melibatkan organisasi kedaerahan (benar). Belanda justru memperketat pengawasan (salah).'
-            },
-
-            // --- Q31: Tiga Serangkai (IP) ---
-            {
-                qNum: 31,
-                type: 'mc',
-                topic: 'Indische Partij (IP) didirikan oleh Tiga Serangkai: Douwes Dekker, Cipto Mangunkusumo, dan Ki Hajar Dewantara.',
-                text: 'Alasan utama pemerintah kolonial Belanda membubarkan Indische Partij dan mengasingkan para pendirinya adalah karena IP...',
-                options: [
-                    'A. Melakukan aksi kekerasan dan pemberontakan bersenjata.',
-                    'B. Meminta kemerdekaan penuh bagi Indonesia saat itu juga.',
-                    'C. Menciptakan kesadaran politik untuk mempersatukan kaum pribumi dan Indo-Belanda.',
-                    'D. Berafiliasi dengan komunis internasional (Komintern).',
-                    'E. Menolak keras kebijakan tanam paksa.'
-                ],
-                answer: 'C',
-                explanation: 'IP dianggap berbahaya karena menyatukan berbagai kelompok untuk melawan diskriminasi dan menumbuhkan kesadaran nasional.'
-            },
-
-            // --- Q32: Organisasi Jepang - PETA ---
-            {
-                qNum: 32,
-                type: 'ms',
-                topic: 'Pada masa pendudukan Jepang, dibentuk berbagai organisasi semi-militer, salah satunya adalah Pembela Tanah Air (PETA).',
-                text: 'Manakah pernyataan yang menunjukkan peran Pembela Tanah Air (PETA) dalam konteks persiapan kemerdekaan Indonesia? Jawaban benar lebih dari satu.',
-                options: [
-                    'PETA dibentuk atas inisiatif dan pendanaan sepenuhnya dari pemimpin nasional Indonesia.',
-                    'PETA memberikan pelatihan militer kepada pemuda Indonesia yang berguna setelah proklamasi.',
-                    'PETA menjadi cikal bakal terbentuknya Tentara Nasional Indonesia (TNI).',
-                    'PETA adalah organisasi yang secara terang-terangan menentang propaganda Jepang.',
-                    'Para anggota PETA memiliki pengalaman memimpin pasukan di tingkat komandan peleton.'
-                ],
-                answers: [false, true, true, false, true],
-                explanation: 'PETA dibentuk Jepang (bukan inisiatif sendiri) tetapi memberikan pelatihan militer, menjadi cikal bakal TNI, dan melahirkan pemimpin berpengalaman.'
-            },
-
-            // --- Q33: Dampak Romusa ---
-            {
-                qNum: 33,
-                type: 'tf',
-                topic: 'Romusa adalah sistem kerja paksa yang diterapkan oleh Jepang, jauh lebih kejam daripada kerja rodi pada masa Belanda.',
-                text: 'Pilihlah Benar atau Salah terkait dampak dari kebijakan Romusa!',
-                statements: [
-                    'Romusa menyebabkan penderitaan fisik, kelaparan, dan angka kematian tinggi di kalangan rakyat Indonesia.',
-                    'Romusa hanya diterapkan di pulau Jawa, sementara pulau lain bebas dari kerja paksa.',
-                    'Secara tidak langsung, Romusa menumbuhkan semangat perlawanan tersembunyi terhadap penjajah.'
-                ],
-                answers: ['Benar', 'Salah', 'Benar'],
-                explanation: 'Romusa sangat kejam (benar), diterapkan luas di Nusantara (salah), dan meningkatkan perlawanan (benar).'
-            },
-
-            // --- Q34: Peristiwa Rengasdengklok ---
-            {
-                qNum: 34,
-                type: 'mc',
-                topic: 'Peristiwa Rengasdengklok terjadi sehari sebelum Proklamasi Kemerdekaan Indonesia, 16 Agustus 1945.',
-                text: 'Apa tujuan utama golongan muda membawa Soekarno dan Hatta ke Rengasdengklok?',
-                options: [
-                    'A. Melindungi mereka dari ancaman pasukan Sekutu.',
-                    'B. Mempersiapkan teks Proklamasi secara rahasia.',
-                    'C. Mendesak Soekarno-Hatta untuk segera memproklamasikan kemerdekaan tanpa pengaruh Jepang.',
-                    'D. Menetapkan dasar negara Indonesia yang baru (Pancasila).',
-                    'E. Merumuskan struktur kabinet Indonesia pertama.'
-                ],
-                answer: 'C',
-                explanation: 'Tujuan utama adalah menjauhkan Soekarno-Hatta dari pengaruh Jepang agar proklamasi murni merupakan kehendak bangsa Indonesia.'
-            },
-
-            // --- Q35: Peran BPUPKI & PPKI ---
-            {
-                qNum: 35,
-                type: 'ms',
-                topic: 'Badan Penyelidik Usaha-usaha Persiapan Kemerdekaan Indonesia (BPUPKI) dan Panitia Persiapan Kemerdekaan Indonesia (PPKI) adalah dua badan penting dalam proses kemerdekaan.',
-                text: 'Manakah tugas-tugas yang menjadi tanggung jawab Panitia Persiapan Kemerdekaan Indonesia (PPKI)? Jawaban benar lebih dari satu.',
-                options: [
-                    'Menyusun dasar negara (Pancasila) dan UUD 1945.',
-                    'Mengesahkan UUD 1945.',
-                    'Memilih Presiden dan Wakil Presiden (Soekarno-Hatta).',
-                    'Menetapkan 8 Provinsi di awal kemerdekaan.',
-                    'Membentuk Angkatan Perang di bawah komando Jepang.'
-                ],
-                answers: [false, true, true, true, false],
-                explanation: 'BPUPKI menyusun dasar negara (salah). PPKI bertugas mengesahkan UUD, memilih Presiden/Wapres, dan menetapkan pemerintahan awal (benar).'
-            },
-
-            // --- Q36: Makna Proklamasi ---
-            {
-                qNum: 36,
-                type: 'mc',
-                topic: 'Proklamasi 17 Agustus 1945 adalah puncak perjuangan bangsa Indonesia.',
-                text: 'Selain sebagai pernyataan kemerdekaan, proklamasi juga memiliki makna lain, yaitu sebagai...',
-                options: [
-                    'A. Titik awal perjuangan fisik melawan Belanda dan Sekutu.',
-                    'B. Akhir dari seluruh masalah dan penderitaan rakyat.',
-                    'C. Pernyataan formal berdirinya negara baru secara de facto dan de jure.',
-                    'D. Pengumuman untuk melaksanakan pemilihan umum pertama.',
-                    'E. Permintaan bantuan kepada PBB untuk pengakuan kedaulatan.'
-                ],
-                answer: 'C',
-                explanation: 'Proklamasi adalah pernyataan resmi kepada dunia bahwa Indonesia telah merdeka secara de facto (nyata) dan de jure (hukum).'
-            },
-
-            // --- Q37: Agresi Militer Belanda ---
-            {
-                qNum: 37,
-                type: 'tf',
-                topic: 'Belanda melakukan dua Agresi Militer, yaitu Agresi Militer I (1947) dan Agresi Militer II (1948), yang melanggar perjanjian damai.',
-                text: 'Pilihlah Benar atau Salah terkait Agresi Militer Belanda!',
-                statements: [
-                    'Agresi Militer I dilakukan Belanda setelah melanggar Perjanjian Linggarjati.',
-                    'Tujuan Agresi Militer II adalah untuk merebut kota Yogyakarta yang saat itu menjadi ibu kota RI.',
-                    'Kedua Agresi Militer Belanda berhasil mendapatkan dukungan penuh dari Dewan Keamanan PBB.'
-                ],
-                answers: ['Benar', 'Benar', 'Salah'],
-                explanation: 'Agresi I melanggar Linggarjati (benar). Agresi II menyerang Yogyakarta (benar). PBB justru menentang (salah).'
-            },
-
-            // --- Q38: Perundingan Penting ---
-            {
-                qNum: 38,
-                type: 'ms',
-                topic: 'Setelah proklamasi, Indonesia terlibat dalam berbagai perundingan dengan Belanda, seperti Linggarjati, Renville, dan Roem-Royen.',
-                text: 'Manakah yang merupakan poin-poin kesepakatan dari Perjanjian Renville? Jawaban benar lebih dari satu.',
-                options: [
-                    'Belanda hanya mengakui wilayah RI meliputi Jawa Tengah, Yogyakarta, dan Sumatra.',
-                    'Pengakuan kedaulatan RI atas seluruh bekas wilayah Hindia Belanda.',
-                    'Pembentukan Republik Indonesia Serikat (RIS).',
-                    'Garis demarkasi (garis Van Mook) sebagai batas wilayah RI dan Belanda.',
-                    'Penarikan mundur pasukan RI dari wilayah yang diduduki Belanda (Hijrah).'
-                ],
-                answers: [true, false, false, true, true],
-                explanation: 'Renville membatasi wilayah RI, menetapkan garis Van Mook, dan mewajibkan Hijrah (penarikan mundur).'
-            },
-
-            // --- Q39: Konferensi Meja Bundar (KMB) ---
-            {
-                qNum: 39,
-                type: 'mc',
-                topic: 'Konferensi Meja Bundar (KMB) yang diadakan di Den Haag pada 1949 menjadi akhir dari konflik fisik Indonesia-Belanda.',
-                text: 'Hasil paling krusial dari Konferensi Meja Bundar (KMB) bagi Indonesia adalah...',
-                options: [
-                    'A. Pembentukan Uni Indonesia-Belanda.',
-                    'B. Pengakuan kedaulatan RI oleh Belanda secara penuh dan tanpa syarat.',
-                    'C. Penyerahan Irian Barat (Papua) kepada Indonesia pada tahun 1950.',
-                    'D. Indonesia wajib membayar seluruh utang Hindia Belanda.',
-                    'E. Penarikan mundur seluruh pasukan Indonesia dari wilayah Belanda.'
-                ],
-                answer: 'B',
-                explanation: 'Pengakuan kedaulatan oleh Belanda adalah hasil terpenting KMB. Masalah Irian Barat ditunda.'
-            },
-
-            // --- Q40: Demokrasi Parlementer ---
-            {
-                qNum: 40,
-                type: 'tf',
-                topic: 'Periode 1950-1959 dikenal sebagai era Demokrasi Parlementer, di mana kabinet sering berganti karena sistem multi-partai dan kurangnya stabilitas politik.',
-                text: 'Pilihlah Benar atau Salah terkait Demokrasi Parlementer!',
-                statements: [
-                    'Kekuasaan eksekutif tertinggi berada di tangan Perdana Menteri.',
-                    'Indonesia berhasil menyelenggarakan Pemilihan Umum pertama pada tahun 1955.',
-                    'Ketidakstabilan politik ditandai dengan seringnya jatuh bangun kabinet dalam waktu singkat.'
-                ],
-                answers: ['Benar', 'Benar', 'Benar'],
-                explanation: 'Dalam sistem parlementer, PM memegang kekuasaan (benar). Pemilu pertama tahun 1955 (benar). Era ini ditandai instabilitas kabinet (benar).'
-            }
-        ];
-
-        // =================================================================
-        // 2. FUNGSI UTILITY (Pengiriman Pesan Non-Blocking)
-        // =================================================================
-        function displayMessage(message, type = 'success', duration = 5000) {
-            const messageBox = document.getElementById('messageBox');
-            const messageItem = document.createElement('div');
-            messageItem.textContent = message;
-            messageItem.className = `message-item ${type === 'success' ? 'message-success' : 'message-error'}`;
-            
-            messageBox.prepend(messageItem);
-
-            setTimeout(() => {
-                messageItem.style.opacity = '0';
-                messageItem.addEventListener('transitionend', () => messageItem.remove());
-            }, duration);
-        }
-
-        function showLoading(show) {
-            document.getElementById('loadingModal').style.display = show ? 'flex' : 'none';
-        }
-
-        // =================================================================
-        // 3. FUNGSI PENGIRIMAN DATA (Komunikasi dengan Apps Script)
-        // =================================================================
-        async function kirimHasilKuis(namaSiswa, skorAkhir, waktuSelesai) {
-            showLoading(true);
-
-            const dataKuis = {
-                namaSiswa: namaSiswa,
-                nilaiSkor: skorAkhir,
-                waktuSelesai: waktuSelesai
-            };
-
-            const formData = new URLSearchParams();
-            for (const key in dataKuis) {
-                formData.append(key, dataKuis[key]);
-            }
-
-            try {
-                const response = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                // Jika status HTTP OK (200-299), lanjutkan
-                if (!response.ok && response.type !== 'opaque') {
-                    throw new Error(`Gagal koneksi. Status: ${response.status}`);
-                }
-                
-                const resultText = await response.text();
-
-                // Dalam banyak kasus GAS, respon 'opaque' dianggap sukses
-                if (response.type === 'opaque' || resultText.trim() === "SUCCESS") {
-                    console.log("✅ Data berhasil tersimpan.");
-                    displayMessage("✅ Data hasil kuis Anda berhasil dikirim dan tersimpan di Google Sheet!", 'success');
-                } else {
-                    // Hanya tampilkan error jika bukan respon opaque yang gagal diparse
-                    console.error("❌ Gagal menyimpan data. Respon Server:", resultText);
-                    displayMessage("Penyimpanan gagal. Cek Apps Script Log untuk detail ERROR.", 'error');
-                }
-
-            } catch (error) {
-                console.error("🚨 Kesalahan Jaringan/Fetch:", error);
-                displayMessage("Kesalahan Jaringan. Pastikan Anda Online dan URL Web App benar.", 'error');
-            } finally {
-                showLoading(false);
-            }
-        }
-
-
-        // =================================================================
-        // 4. LOGIKA KUIS UTAMA (State Management)
-        // =================================================================
-        let userAnswers = {};
-        let startTime = null;
-        let currentPage = 'intro';
-        const contentDiv = document.getElementById('content');
-        const submitButton = document.getElementById('submitButton');
-        const pageTitle = document.getElementById('pageTitle');
-
-        function setPage(pageName) {
-            currentPage = pageName;
-            render();
-        }
-
-        function render() {
-            contentDiv.innerHTML = '';
-            submitButton.classList.add('hidden');
-
-            switch (currentPage) {
-                case 'intro':
-                    renderIntro();
-                    pageTitle.textContent = 'Selamat Datang';
-                    break;
-                case 'quiz':
-                    renderQuiz();
-                    pageTitle.textContent = `Total ${quizQuestions.length} Soal`;
-                    submitButton.classList.remove('hidden');
-                    break;
-                case 'results':
-                    renderResults();
-                    pageTitle.textContent = 'Hasil Kuis';
-                    break;
-            }
-        }
-
-        // --- Render Halaman Intro ---
-        function renderIntro() {
-            contentDiv.innerHTML = `
-                <div class="space-y-6 text-center">
-                    <p class="text-gray-600 text-xl">Silakan masukkan nama Anda untuk memulai kuis sejarah. Kuis terdiri dari ${quizQuestions.length} soal.</p>
-                    <div class="max-w-md mx-auto">
-                        <input type="text" id="inputNama" placeholder="Nama Lengkap Anda" class="w-full p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                    </div>
-                    <button onclick="startQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300">
-                        Mulai Kuis Sekarang
-                    </button>
-                </div>
-            `;
-        }
-
-        function startQuiz() {
-            const nama = document.getElementById('inputNama').value.trim();
-            if (nama.length < 3) {
-                displayMessage("Mohon masukkan nama lengkap Anda (minimal 3 karakter).", 'error');
-                return;
-            }
-            // Reset jawaban dan mulai timer
-            userAnswers = {}; 
-            startTime = Date.now(); 
-            setPage('quiz');
-        }
-
-
-        // --- Render Halaman Kuis ---
-        function renderQuiz() {
-            const quizHtml = quizQuestions.map((q, index) => {
-                const questionIndex = q.qNum - 1;
-                
-                let inputType = '';
-                let optionsHtml = '';
-
-                if (q.type === 'mc') {
-                    inputType = 'radio';
-                    optionsHtml = q.options.map(option => `
-                        <label class="flex items-center p-3 my-2 border border-gray-200 rounded-lg option-label">
-                            <input type="${inputType}" name="q${q.qNum}" value="${option.charAt(0)}" 
-                                ${userAnswers[questionIndex] === option.charAt(0) ? 'checked' : ''} 
-                                onchange="handleAnswer(${questionIndex}, event)" class="mr-3 text-blue-600 focus:ring-blue-500 h-5 w-5" />
-                            <span class="text-gray-700">${option}</span>
-                        </label>
-                    `).join('');
-                } else if (q.type === 'tf') {
-                    inputType = 'radio';
-                    optionsHtml = q.statements.map((statement, stmtIndex) => `
-                        <div class="border border-gray-200 p-4 rounded-lg my-3">
-                            <p class="font-semibold text-gray-800 mb-2">${statement}</p>
-                            <div class="flex space-x-4">
-                                <label class="flex items-center p-2 rounded-lg option-label border">
-                                    <input type="${inputType}" name="q${q.qNum}_${stmtIndex}" value="Benar" 
-                                        ${userAnswers[questionIndex] && userAnswers[questionIndex][stmtIndex] === 'Benar' ? 'checked' : ''}
-                                        onchange="handleTFAnswer(${questionIndex}, ${stmtIndex}, event)" class="mr-2 text-blue-600 focus:ring-blue-500 h-4 w-4" />
-                                    <span class="text-green-600">Benar</span>
-                                </label>
-                                <label class="flex items-center p-2 rounded-lg option-label border">
-                                    <input type="${inputType}" name="q${q.qNum}_${stmtIndex}" value="Salah" 
-                                        ${userAnswers[questionIndex] && userAnswers[questionIndex][stmtIndex] === 'Salah' ? 'checked' : ''}
-                                        onchange="handleTFAnswer(${questionIndex}, ${stmtIndex}, event)" class="mr-2 text-red-600 focus:ring-red-500 h-4 w-4" />
-                                    <span class="text-red-600">Salah</span>
-                                </label>
-                            </div>
-                        </div>
-                    `).join('');
-                } else if (q.type === 'ms') {
-                     inputType = 'checkbox';
-                    optionsHtml = q.options.map((option, optIndex) => `
-                        <label class="flex items-start p-3 my-2 border border-gray-200 rounded-lg option-label">
-                            <input type="${inputType}" name="q${q.qNum}" value="${optIndex}" 
-                                ${userAnswers[questionIndex] && userAnswers[questionIndex].includes(optIndex) ? 'checked' : ''} 
-                                onchange="handleMSAnswer(${questionIndex}, ${optIndex}, event)" class="mr-3 mt-1 text-blue-600 focus:ring-blue-500 h-5 w-5" />
-                            <span class="text-gray-700">${option}</span>
-                        </label>
-                    `).join('');
-                }
-
-                return `
-                    <div class="mb-10 p-5 border border-gray-200 rounded-xl shadow-sm">
-                        <p class="text-sm font-medium text-blue-500 mb-2">Soal No. ${q.qNum} (${q.type === 'ms' ? 'Pilih Banyak' : q.type === 'tf' ? 'Benar/Salah' : 'Pilihan Ganda'})</p>
-                        <div class="question-container">
-                            <p class="text-xs text-gray-500 italic mb-3">${q.topic}</p>
-                            <p class="text-lg font-semibold text-gray-800 mb-4">${q.text}</p>
-                        </div>
-                        <div class="mt-4 space-y-2">
-                            ${optionsHtml}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            contentDiv.innerHTML = quizHtml;
-        }
-
-        // --- Handler Jawaban (MC & TF) ---
-        function handleAnswer(qIndex, event) {
-            userAnswers[qIndex] = event.target.value;
-        }
-
-        // --- Handler Jawaban Benar/Salah (TF) ---
-        function handleTFAnswer(qIndex, stmtIndex, event) {
-            if (!userAnswers[qIndex]) {
-                userAnswers[qIndex] = {};
-            }
-            userAnswers[qIndex][stmtIndex] = event.target.value;
-        }
-
-        // --- Handler Jawaban Pilih Banyak (MS) ---
-        function handleMSAnswer(qIndex, optIndex, event) {
-            if (!userAnswers[qIndex]) {
-                userAnswers[qIndex] = [];
-            }
-            if (event.target.checked) {
-                if (!userAnswers[qIndex].includes(optIndex)) {
-                    userAnswers[qIndex].push(optIndex);
-                }
-            } else {
-                userAnswers[qIndex] = userAnswers[qIndex].filter(i => i !== optIndex);
-            }
-        }
-
-
-        // --- Menghitung Skor & Submit ---
-        function calculateScore() {
-            let totalScore = 0;
-            let maxScore = quizQuestions.length; // Setiap soal bernilai 1 poin
-
-            quizQuestions.forEach((q, index) => {
-                const userAnswer = userAnswers[index];
-                
-                if (!userAnswer) return; // Lewati jika tidak dijawab
-
-                let isCorrect = false;
-
-                if (q.type === 'mc') {
-                    // Pilihan Ganda (MC)
-                    if (userAnswer === q.answer) {
-                        isCorrect = true;
-                    }
-                } else if (q.type === 'tf') {
-                    // Benar/Salah (TF) - Harus benar semua pernyataan
-                    isCorrect = q.statements.every((_, stmtIndex) => {
-                        return userAnswer[stmtIndex] === q.answers[stmtIndex];
-                    });
-                } else if (q.type === 'ms') {
-                    // Pilih Banyak (MS) - Harus memilih semua yang benar dan tidak memilih yang salah
-                    const correctIndices = q.answers
-                        .map((isCorrect, i) => isCorrect ? i : null)
-                        .filter(i => i !== null);
-
-                    const userSelectedIndices = Array.isArray(userAnswer) ? userAnswer.sort((a,b) => a-b) : [];
-                    
-                    // Cek apakah jawaban user sama persis dengan jawaban benar
-                    if (userSelectedIndices.length === correctIndices.length && 
-                        userSelectedIndices.every((val, idx) => val === correctIndices[idx])) {
-                        isCorrect = true;
-                    }
-                }
-
-                if (isCorrect) {
-                    totalScore += 1;
-                }
-            });
-
-            // Konversi skor ke skala 100
-            const finalScore = Math.round((totalScore / maxScore) * 100);
-            
-            return { totalScore, maxScore, finalScore };
-        }
-
-        function submitQuiz() {
-            const { totalScore, maxScore, finalScore } = calculateScore();
-            const inputNamaElement = document.getElementById('inputNama');
-            const namaSiswa = inputNamaElement ? inputNamaElement.value.trim() : 'Anonim';
-            const endTime = Date.now();
-            const timeElapsedSeconds = Math.round((endTime - startTime) / 1000);
-
-            // 1. Kirim data ke Apps Script
-            kirimHasilKuis(namaSiswa, finalScore, timeElapsedSeconds);
-            
-            // 2. Tampilkan halaman hasil kuis
-            setPage('results');
-        }
-
-        // --- Render Halaman Hasil ---
-        function renderResults() {
-            const { totalScore, maxScore, finalScore } = calculateScore();
-            const timeElapsedSeconds = Math.round((Date.now() - startTime) / 1000);
-            const inputNamaElement = document.getElementById('inputNama');
-            const namaSiswa = inputNamaElement ? inputNamaElement.value.trim() : 'Anonim';
-            const minutes = Math.floor(timeElapsedSeconds / 60);
-            const seconds = timeElapsedSeconds % 60;
-            
-            let message = '';
-            let color = '';
-
-            if (finalScore >= 80) {
-                message = "Luar Biasa! Pemahaman Sejarah Anda Sangat Baik.";
-                color = "text-green-600";
-            } else if (finalScore >= 60) {
-                message = "Cukup Baik! Terus Tingkatkan Pemahaman Anda.";
-                color = "text-yellow-600";
-            } else {
-                message = "Perlu Belajar Lebih Keras. Jangan Menyerah!";
-                color = "text-red-600";
-            }
-
-            contentDiv.innerHTML = `
-                <div class="text-center space-y-6 p-8 border border-gray-200 rounded-xl shadow-lg">
-                    <h2 class="text-4xl font-bold ${color}">${finalScore}/100</h2>
-                    <p class="text-2xl font-semibold text-gray-800">${message}</p>
-                    
-                    <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-lg">
-                        <div class="p-3 bg-blue-50 rounded-lg">
-                            <p class="text-gray-500">Nama Siswa</p>
-                            <p class="font-bold text-blue-800">${namaSiswa}</p>
-                        </div>
-                        <div class="p-3 bg-blue-50 rounded-lg">
-                            <p class="text-gray-500">Jawaban Benar</p>
-                            <p class="font-bold text-blue-800">${totalScore} dari ${maxScore}</p>
-                        </div>
-                        <div class="p-3 bg-blue-50 rounded-lg">
-                            <p class="text-gray-500">Waktu Pengerjaan</p>
-                            <p class="font-bold text-blue-800">${minutes} menit ${seconds} detik</p>
-                        </div>
-                    </div>
-
-                    <p class="text-sm text-gray-500 mt-6">
-                        Data hasil kuis ini telah dikirim ke Google Sheet Anda.
-                    </p>
-                    <button onclick="setPage('intro')" class="mt-4 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
-                        Ulangi Kuis
-                    </button>
-                </div>
-            `;
-        }
-
-        // Mulai aplikasi
-        window.onload = () => {
-            render();
-        };
-
-    </script>
+  </div>
+
+<script>
+/* ================== CONFIG ================== */
+/* Google Apps Script Web App URL (Anda yang kirimkan) */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz2W9Ynb9zv9jf0MpUIX0oeR-CfYZ4RNKll5uk_7bqVVzV36SxYR23VYUZuIkvWhiZ2/exec';
+
+/* ================== STATE ================== */
+let studentName = '';
+let current = 0;
+let score = 0;
+let startedAt = null;
+
+/* ================== QUESTIONS (40) ==================
+   Format tiap objek:
+   {
+     id: number,
+     description: string,
+     question: string,
+     type: 'single' | 'multi' | 'tf',
+     options: [ 'A...', 'B...' ],
+     correct: index (for single/tf) OR [indices] (for multi),
+     explanation: string
+   }
+   (Semua soal & deskripsi diambil dari file PDF yang Anda unggah.)
+*/
+const questions = [
+  {
+    id:1,
+    description: "Pameran Sunting: Jejak Perempuan Indonesia — konteks pameran dan peran tokoh perempuan.",
+    question: "1. Bagaimana keterkaitan perjuangan perempuan pada masa lalu dengan dinamika sosial budaya perempuan Indonesia saat ini?",
+    type: "single",
+    options: [
+      "A. Perjuangan perempuan masa lalu menjadi landasan bagi peran aktif perempuan di berbagai bidang saat ini.",
+      "B. Perempuan masa kini aktif menyuarakan hak-haknya karena peran laki-laki dalam masyarakat mulai melemah.",
+      "C. Semangat perjuangan tokoh perempuan dahulu mendorong berkembangnya tren perempuan mandiri masa kini.",
+      "D. Perjuangan perempuan masa kini lebih modern dan tidak memiliki hubungan dengan sejarah perjuangan perempuan.",
+      "E. Perjuangan perempuan masa kini lebih fokus pada kegiatan budaya dan kurang berkontribusi terhadap perubahan politik."
+    ],
+    correct: 0,
+    explanation: "Jawaban A benar. Perjuangan perempuan masa lalu menjadi landasan dan inspirasi bagi keterlibatan perempuan di bidang sosial, politik, pendidikan, seni, dan lainnya saat ini."
+  },
+  {
+    id:2,
+    description: "Konsep berpikir sejarah — menilai pernyataan yang sesuai dengan interpretasi sejarah.",
+    question: "2. Pilih pernyataan yang menunjukkan konsep berpikir sejarah (benar/salah). Mana yang benar?",
+    type: "multi",
+    options: [
+      "Pameran Sunting tidak disusun secara kronologis.",
+      "Pameran Sunting menunjukkan keberlanjutan peran perempuan dalam berbagai bidang.",
+      "Peristiwa yang dialami tokoh-tokoh perempuan dalam pameran memiliki pola yang sama."
+    ],
+    correct: [1], // only second is correct (keberlanjutan)
+    explanation: "Hanya pernyataan kedua yang sesuai. Pameran menampilkan kesinambungan peran perempuan (benar). 'Tidak disusun kronologis' tidak disebut; 'pola sama' terlalu umum dan tidak selalu benar."
+  },
+  {
+    id:3,
+    description: "Perbandingan kebijakan pertanian masa kolonial dan setelah kemerdekaan.",
+    question: "3. Setelah Indonesia merdeka, kebijakan pertanian berubah. Pilih pernyataan yang benar (lebih dari satu).",
+    type: "multi",
+    options: [
+      "Penerapan koperasi pertanian untuk menggantikan sistem tanam paksa.",
+      "Perubahan kebijakan pertanian dari tanam paksa ke swasembada pangan.",
+      "Pergeseran fokus kebijakan dari kepentingan kolonial ke kepentingan nasional.",
+      "Penggunaan teknologi modern dalam pertanian sejak masa penjajahan Belanda.",
+      "Penggunaan lahan pertanian rakyat dari masa kolonial hingga masa kemerdekaan."
+    ],
+    correct: [0,1,2,4], // 0,1,2,4 reasonable per teks (4 maybe ambiguous but PDF included)
+    explanation: "Benar: koperasi & swasembada serta pergeseran kepentingan ke nasional. Penggunaan lahan rakyat memang berlanjut dan berubah pengaturannya. 'Penggunaan teknologi modern sejak masa penjajahan' tidak selalu benar sebagai perubahan pasca-merdeka."
+  },
+  {
+    id:4,
+    description: "Metodologi penelitian sejarah — sumber primer & arsip kolonial.",
+    question: "4. Untuk meneliti dampak Undang-Undang Agraria 1870 terhadap perkebunan kopi di Pasuruan, langkah paling tepat adalah...",
+    type: "single",
+    options: [
+      "A. Menguji sampel tanah dari lahan bekas perkebunan kopi di Pasuruan.",
+      "B. Menggunakan peta kontemporer untuk menunjukkan lokasi perdagangan kopi.",
+      "C. Menyebarkan survei daring kepada masyarakat Pasuruan mengenai sejarah kopi.",
+      "D. Melakukan observasi langsung ke kebun kopi saat ini dan mewawancarai petani lokal.",
+      "E. Membandingkan laporan kolonial dan arsip kepemilikan tanah sebelum dan sesudah 1870."
+    ],
+    correct: 4,
+    explanation: "Jawaban E paling tepat untuk melihat dampak hukum/agraria: membandingkan laporan dan arsip kepemilikan tanah sebelum & sesudah 1870."
+  },
+  {
+    id:5,
+    description: "Sumber primer dan sekunder dalam tulisan sejarah.",
+    question: "5. Manakah yang menunjukkan contoh sumber primer? (pilih lebih dari satu)",
+    type: "multi",
+    options: [
+      "Data peningkatan jumlah pohon kopi antara 1836-1844.",
+      "Hasil wawancara tahun 2020 dengan keturunan petani kopi di Pasuruan.",
+      "Buku sejarah modern yang mengulas sistem tanam paksa di Jatim.",
+      "Laporan Kultuur Verslag 1834 tentang jumlah petani dan pohon kopi.",
+      "Naskah Undang-Undang Agraria 1870 yang diterbitkan oleh pemerintah kolonial Belanda."
+    ],
+    correct: [0,1,3,4],
+    explanation: "Sumber primer meliputi data statistik kontemporer (0), wawancara kesaksian (1), laporan Kultuur Verslag (3), dan naskah undang-undang (4). Buku sejarah modern (2) bersifat sekunder."
+  },
+  {
+    id:6,
+    description: "Fungsi sumber sejarah — arsip, foto, kesaksian untuk karya tulis sejarah.",
+    question: "6. Fungsi sumber-sumber (arsip, foto, kesaksian) terhadap penulisan sejarah: manakah tepat?",
+    type: "multi",
+    options: [
+      "Memperkuat opini pribadi penulis sejarah.",
+      "Mengurangi keragaman perspektif terhadap peristiwa sejarah.",
+      "Memberikan bukti dan data yang objektif terhadap peristiwa sejarah."
+    ],
+    correct: [2], // only 'memberikan bukti' is tepat
+    explanation: "Sumber primer memberi bukti dan data. Mereka tidak seharusnya hanya memperkuat opini pribadi dan tidak seharusnya mengurangi keragaman perspektif."
+  },
+  {
+    id:7,
+    description: "Peran jalur perdagangan dalam penyebaran agama Hindu-Buddha ke Nusantara.",
+    question: "7. Apa peran jalur perdagangan bagi penyebaran agama Hindu-Buddha di Nusantara? (pilih lebih dari satu)",
+    type: "multi",
+    options: [
+      "Jalur perdagangan memfasilitasi perpindahan pedagang, biksu, dan cendekiawan.",
+      "Komoditas dagang secara langsung digunakan sebagai alat tukar untuk mengajarkan ajaran agama.",
+      "Interaksi di pelabuhan memfasilitasi pertukaran budaya dan ideologi.",
+      "Para pedagang mendirikan candi dan wihara di setiap pelabuhan sebagai pusat penyebaran agama.",
+      "Jalur perdagangan mempermudah akses masyarakat Nusantara belajar langsung ke India lalu kembali menyebarkannya."
+    ],
+    correct: [0,2,4],
+    explanation: "Benar: jalur perdagangan memfasilitasi perpindahan orang (0), pertukaran budaya di pelabuhan (2), dan akses belajar ke luar (4). Pernyataan 1 (komoditas langsung dipakai mengajarkan agama) dan 3 (mendirikan candi di setiap pelabuhan) terlalu mutlak."
+  },
+  {
+    id:8,
+    description: "Evaluasi pernyataan berkaitan perdagangan dan masuknya budaya Hindu-Buddha.",
+    question: "8. Benar atau Salah: Pilih pernyataan yang benar sesuai teks.",
+    type: "multi",
+    options: [
+      "Perdagangan hanya membawa keuntungan ekonomi tanpa memperkaya budaya Nusantara.",
+      "Jalur rempah memainkan peran penting dalam menarik pelaut dan pedagang dari India sehingga memfasilitasi masuknya pengaruh Hindu-Buddha.",
+      "Teori Brahmana dan Waisya menjelaskan bahwa agama Hindu-Buddha masuk ke Nusantara melalui jalur militer."
+    ],
+    correct: [1], // only second is true
+    explanation: "Hanya pernyataan kedua benar. Perdagangan memperkaya budaya (jadi pernyataan 0 salah). Teori Brahmana/Waisya bukan klaim masuk lewat jalur militer secara umum (3 salah)."
+  },
+  {
+    id:9,
+    description: "Simbol kerajaan Majapahit — interpretasi ikonografi (Dewa Wisnu menunggang Garuda).",
+    question: "9. Dari gambar Dewa Wisnu menunggang Garuda: manakah peran raja dalam pemerintahan Majapahit?",
+    type: "single",
+    options: [
+      "A. Pemimpin agama",
+      "B. Panglima perang",
+      "C. Perwujudan dewa",
+      "D. Penjaga alam semesta",
+      "E. Pemimpin seluruh rakyat"
+    ],
+    correct: 2, // C. Perwujudan dewa (divine kingship)
+    explanation: "Jawaban C tepat. Dalam ikonografi Hindu-Buddha raja sering dipandang sebagai perwujudan atau wakil dewa (devaraja)."
+  },
+  {
+    id:10,
+    description: "Dampak perkawinan antara pedagang Muslim dan bangsawan lokal pada awal Islam di Nusantara.",
+    question: "10. Dampak perkawinan tersebut adalah...",
+    type: "single",
+    options: [
+      "A. Para penguasa lokal mendapatkan keuntungan ekonomis.",
+      "B. Pedagang muslim berpotensi menjadi pejabat tinggi kerajaan.",
+      "C. Terjadinya konsesi dagang yang merugikan penguasa lokal.",
+      "D. Banyak bangsawan lokal bermigrasi ke Timur Tengah.",
+      "E. Banyak keluarga kerajaan yang masuk Islam dan melahirkan generasi muslim baru."
+    ],
+    correct: 4, // E
+    explanation: "Jawaban E benar — perkawinan mempercepat islamisasi keluarga kerajaan dan elite lokal, melahirkan generasi muslim."
+  },
+  {
+    id:11,
+    description: "Kejayaan Samudera Pasai — tiga pilar: jaringan maritim, pemerintahan, penyebaran Islam.",
+    question: "11. Benar atau Salah: Pilih pernyataan yang benar berdasarkan teks.",
+    type: "multi",
+    options: [
+      "Letak geografis di jalur perdagangan menjadi faktor kejayaan Samudera Pasai.",
+      "Peran Sultan Malik as-Saleh adalah satu-satunya faktor di balik seluruh kejayaan Samudera Pasai.",
+      "Hukum syariat yang diterapkan tidak hanya terbatas pada urusan agama tetapi juga mengatur perdagangan dan sengketa."
+    ],
+    correct: [0,2],
+    explanation: "Pernyataan 1 dan 3 benar. Pernyataan 2 salah karena kejayaan dipengaruhi banyak faktor, bukan hanya peran Sultan."
+  },
+  {
+    id:12,
+    description: "Hubungan timbal balik antara jaringan maritim dan penyebaran Islam di Samudera Pasai.",
+    question: "12. Manakah pernyataan yang menunjukkan hubungan timbal balik? (lebih dari satu)",
+    type: "multi",
+    options: [
+      "Jaringan maritim memberi jalur bagi ulama dan pedagang untuk menyebarkan Islam.",
+      "Kejayaan maritim mendorong Samudera Pasai untuk mengirim ekspedisi militer guna menyebarkan Islam.",
+      "Ajaran Islam memberikan kode etik yang menarik pedagang asing.",
+      "Penyebaran Islam menghasilkan banyak tenaga kerja ahli maritim sehingga memperkuat jaringan perdagangan.",
+      "Sultan memakai pajak perdagangan untuk membiayai pembangunan masjid di Sumatra."
+    ],
+    correct: [0,2,4],
+    explanation: "Benar: 0 (jalur bagi ulama), 2 (etika & kepercayaan menarik pedagang), dan 4 (pajak perdagangan dipakai untuk kegiatan keagamaan). Pernyataan 1 militaristik dan 3 kurang didukung."
+  },
+  {
+    id:13,
+    description: "Dampak kolonialisme Eropa: aspek ekonomi, sosial, budaya, dan warisan infrastruktur/birokrasi.",
+    question: "13. Benar atau Salah: Pernyataan terkait dampak kolonialisme. Pilih yang benar.",
+    type: "multi",
+    options: [
+      "Kebijakan politik etis sepenuhnya berhasil meningkatkan kesejahteraan bumiputra.",
+      "Pendidikan masa kolonial dirancang untuk mendukung munculnya kesadaran nasional rakyat.",
+      "Struktur birokrasi modern yang diperkenalkan Belanda berdampak pada sistem administrasi masa kini."
+    ],
+    correct: [2], // only third is validly true as general statement
+    explanation: "Hanya pernyataan 3 benar secara luas. Politik etis tidak sepenuhnya berhasil (1 salah). Pendidikan kolonial sering dibatasi dan tidak secara langsung mendorong kesadaran nasional (2 tidak sepenuhnya benar)."
+  },
+  {
+    id:14,
+    description: "Motivasi 3G bangsa Eropa (Gold, Glory, Gospel) dan tindakan di Nusantara.",
+    question: "14. Berdasarkan motivasi 3G, pilih tindakan yang sesuai (lebih dari satu).",
+    type: "multi",
+    options: [
+      "Mendirikan sekolah Eropa untuk menyebarkan nilai-nilai Barat.",
+      "Memaksa penduduk lokal memeluk Katolik melalui misi zending.",
+      "Menerapkan sistem pajak progresif oleh VOC untuk mendorong kesejahteraan rakyat.",
+      "Mengangkat raja boneka untuk memperluas dominasi.",
+      "Mendirikan benteng dagang dan markas militer di wilayah strategis."
+    ],
+    correct: [0,1,3,4],
+    explanation: "Benar: sekolah & misi keagamaan (0,1), pengangkatan raja boneka (3), dan pembentukan benteng dagang (4). Pernyataan tentang pajak progresif oleh VOC (2) tidak sesuai; VOC malah memberlakukan kebijakan komersial dan monopolistik, bukan sistem pajak progresif untuk kesejahteraan rakyat."
+  },
+  {
+    id:15,
+    description: "Dampak kedatangan Eropa pada dinamika sosial-politik-budaya populer.",
+    question: "15. Benar atau Salah: pernyataan tentang dampak kedatangan Eropa.",
+    type: "multi",
+    options: [
+      "Penyebaran agama oleh bangsa Eropa memicu konflik budaya dengan masyarakat lokal.",
+      "Dominasi politik Eropa melahirkan pemerintahan raja boneka di beberapa kerajaan.",
+      "Campur tangan kolonial di bidang budaya memperkuat identitas budaya lokal secara menyeluruh."
+    ],
+    correct: [0,1],
+    explanation: "Pernyataan 1 dan 2 benar (konflik budaya & raja boneka). Pernyataan 3 salah — campur tangan kolonial sering menekan / memodifikasi budaya lokal, bukan memperkuatnya secara menyeluruh."
+  },
+  {
+    id:16,
+    description: "Alternatif kebijakan pengganti Tanam Paksa (cultuurstelsel) agar kas negara tetap terpenuhi tanpa penderitaan rakyat.",
+    question: "16. Pilih kebijakan alternatif terbaik untuk menggantikan tanam paksa:",
+    type: "single",
+    options: [
+      "A. Mengatur kuota hasil bumi tapi memberi kebebasan jenis tanaman.",
+      "B. Mewajibkan petani menanam komoditas ekspor di lahan kosong.",
+      "C. Memusatkan tanam paksa di wilayah subur saja.",
+      "D. Mengganti kewajiban menanam dengan kerja wajib di pabrik pemerintah.",
+      "E. Memberlakukan sistem kontrak sukarela dengan insentif harga tetap bagi petani yang menanam ekspor."
+    ],
+    correct: 4, // E best alternative (kontrak sukarela + insentif)
+    explanation: "Jawaban E paling etis & efektif: kontrak sukarela dengan insentif menghindari paksaan dan memberi kompensasi."
+  },
+  {
+    id:17,
+    description: "Politik Etis Belanda (irigasi, edukasi, transmigrasi) dan dampaknya pada kelahiran kaum terpelajar.",
+    question: "17. Simpulan tepat berdasarkan politik etis:",
+    type: "single",
+    options: [
+      "A. Politik etis gagal meningkatkan kesejahteraan rakyat.",
+      "B. Politik etis menurunkan kesadaran politik bangsa Indonesia.",
+      "C. Politik etis menghapus kebijakan diskriminatif kolonial.",
+      "D. Politik etis melahirkan kaum terpelajar yang menjadi pelopor pergerakan nasional.",
+      "E. Politik etis mempercepat kemerdekaan Indonesia melalui pendidikan."
+    ],
+    correct: 3, // D
+    explanation: "D benar — program edukasi melahirkan golongan terpelajar yang menjadi pelopor pergerakan nasional."
+  },
+  {
+    id:18,
+    description: "Perlawanan intelektual melalui pers: Tirto Adhi Soerjo dan Medan Prijaji.",
+    question: "18. Bentuk perlawanan yang tercermin dari aktivitas Tirto Adhi Soerjo?",
+    type: "single",
+    options: [
+      "A. Pemberontakan bersenjata melawan tentara kolonial.",
+      "B. Gerakan sabotase ekonomi kolonial di kota besar.",
+      "C. Perlawanan diplomatik melalui perwakilan di parlemen Belanda.",
+      "D. Perlawanan melalui media massa untuk membangun kesadaran nasional.",
+      "E. Kerja sama dengan pengusaha bumiputra untuk melemahkan dominasi Belanda."
+    ],
+    correct: 3, // D
+    explanation: "Jawaban D benar: penggunaan pers (surat kabar) sebagai alat perjuangan politik dan sosial."
+  },
+  {
+    id:19,
+    description: "Nilai perjuangan rakyat tercermin dari kiprah Medan Prijaji dan tokoh pers lainnya.",
+    question: "19. Manakah yang mencerminkan nilai perjuangan rakyat periode kolonial? (lebih dari satu)",
+    type: "multi",
+    options: [
+      "Pers menjadi alat penting menyuarakan keadilan sosial dan kemerdekaan.",
+      "Kepatuhan terhadap penguasa kolonial merupakan bentuk perjuangan yang bijaksana.",
+      "Kritik terhadap ketidakadilan sosial dihindari untuk menjaga stabilitas pemerintahan kolonial.",
+      "Perlawanan dapat dilakukan melalui pendidikan dan tulisan untuk menggugah kesadaran rakyat.",
+      "Rasa nasionalisme dapat tumbuh melalui penyampaian ide-ide kemerdekaan dalam media cetak."
+    ],
+    correct: [0,3,4],
+    explanation: "Pernyataan 0,3,4 mencerminkan nilai perjuangan: pers, pendidikan, dan penyampaian ide via media cetak. Pernyataan 1-2 bertentangan."
+  },
+  {
+    id:20,
+    description: "Strategi Indische Partij (non-kooperatif) melawan kolonialisme.",
+    question: "20. Strategi Indische Partij yang benar? (lebih dari satu)",
+    type: "multi",
+    options: [
+      "Menjadikan pendidikan Barat prioritas sambil mengesampingkan isu politik.",
+      "Menolak ketergantungan pada kekuatan asing dan mendorong perjuangan mandiri.",
+      "Mengedepankan kerja sama dengan pemerintah Belanda untuk pengakuan politik.",
+      "Membangun kesadaran rakyat lewat tulisan, pidato, dan poster.",
+      "Menggalang dukungan dari organisasi lain."
+    ],
+    correct: [1,3,4],
+    explanation: "Indische Partij menolak kooperasi, menggalang organisasi & menyebarkan kesadaran melalui media/pidato (pilihan 2,4,5 dalam teks asli)."
+  },
+  {
+    id:21,
+    description: "Tujuan berdirinya Indische Partij — sikap non-kooperatif dan persamaan hak.",
+    question: "21. Benar atau Salah: tujuan Indische Partij? Pilih yang benar.",
+    type: "multi",
+    options: [
+      "Mempersiapkan pemerintahan kolonial agar lebih demokratis.",
+      "Memperkuat hubungan diplomatik dengan pemerintah Belanda.",
+      "Membangun kesetaraan antara keturunan Belanda dan kaum bumiputra."
+    ],
+    correct: [2],
+    explanation: "Tujuan Indische Partij lebih menekankan kesetaraan dan penolakan kerja sama kolonial; pilihan 3 benar. Pilihan 1-2 tidak tepat."
+  },
+  {
+    id:22,
+    description: "Kronologi masuknya Jepang & kapitulasi Belanda (Kalijati) awal 1942.",
+    question: "22. Benar atau Salah: pernyataan berkaitan berakhirnya kekuasaan Belanda dan masuknya Jepang?",
+    type: "multi",
+    options: [
+      "Letnan Jenderal Hitashi Imamura menjadi tokoh penting dalam proses penyerahan kekuasaan.",
+      "Masuknya Jepang di Indonesia diawali dengan serangan ke Pearl Harbor, Hawaii.",
+      "Belanda menyerah kepada Jepang melalui perjanjian Renville."
+    ],
+    correct: [0,1], // First two from text; third is false (Renville later with Dutch)
+    explanation: "Pernyataan 1 benar (Imamura terlibat), 2 benar (awal serangan Pearl Harbor), 3 salah — Renville adalah perundingan Belanda-Indonesia pasca-Perang Dunia II."
+  },
+  {
+    id:23,
+    description: "Kebijakan ekonomi Jepang masa pendudukan: tujuan utamanya selama perang.",
+    question: "23. Tujuan utama Jepang dalam kebijakan ekonomi di Indonesia pendudukan?",
+    type: "single",
+    options: [
+      "A. Mendorong pembangunan industri ringan lokal.",
+      "B. Meningkatkan ekonomi lokal tanpa kampanye militer.",
+      "C. Mendukung swasembada pangan bagi rakyat Indonesia.",
+      "D. Menyediakan kompensasi penuh kepada petani romusa.",
+      "E. Mengeksploitasi sumber daya alam untuk kebutuhan perang Jepang."
+    ],
+    correct: 4,
+    explanation: "Jawaban E benar — kebijakan ekonomi Jepang fokus pada eksploitasi sumber daya untuk mendukung effort perang."
+  },
+  {
+    id:24,
+    description: "Dampak pendudukan Jepang 1942–1945: kerja paksa, bahasa, struktur militer lokal.",
+    question: "24. Dampak pendudukan Jepang di Indonesia? (lebih dari satu)",
+    type: "multi",
+    options: [
+      "Petani dan buruh mengalami kesejahteraan secara merata.",
+      "Rakyat banyak menjadi korban kerja paksa dan kelaparan.",
+      "Penduduk diberi hak politik penuh dan bebas mengkritik pemerintah Jepang.",
+      "Pemerintah Jepang mengajarkan bahasa Jepang sebagai bahasa pengantar.",
+      "Pemerintah Jepang membentuk struktur militer lokal (Peta, Seinendan) yang kelak menjadi cikal bakal TNI."
+    ],
+    correct: [1,3,4],
+    explanation: "Benar: korban kerja paksa (1), pengajaran bahasa Jepang (3), dan pembentukan struktur militer lokal (4). Pernyataan 0 dan 2 bertolak belakang: 0 salah."
+  },
+  {
+    id:25,
+    description: "Peristiwa Rengasdengklok — pemuda memaksa percepatan proklamasi (Agustus 1945).",
+    question: "25. Benar atau Salah: pernyataan tentang peristiwa Rengasdengklok?",
+    type: "multi",
+    options: [
+      "Sukarno dan Hatta dibawa ke Rengasdengklok oleh golongan muda.",
+      "Peristiwa Rengasdengklok berlangsung pada 17 Agustus 1945.",
+      "Tujuan pemuda membawa Sukarno & Hatta adalah agar proklamasi segera dilaksanakan."
+    ],
+    correct: [0,2],
+    explanation: "Pernyataan 1 benar (mereka dibawa), 3 benar (tujuan mempercepat proklamasi). Pernyataan 2 salah — peristiwa itu terjadi pada 16 Agustus 1945 (proklamasi 17 Agustus)."
+  },
+  {
+    id:26,
+    description: "Penyebaran kabar proklamasi 17 Agustus 1945 — peran rakyat & media.",
+    question: "26. Tindakan yang menunjukkan upaya rakyat menyebarluaskan berita proklamasi? (lebih dari satu)",
+    type: "multi",
+    options: [
+      "Rakyat berani melawan sensor Jepang demi kemerdekaan.",
+      "Jepang mendukung penuh penyiaran kabar kemerdekaan.",
+      "Rakyat menunggu restu Jepang sebelum menyebarkan berita.",
+      "Radio digunakan sebagai sarana penting penyebaran informasi.",
+      "Kantor-kantor berita dimanfaatkan untuk mendistribusikan informasi."
+    ],
+    correct: [0,3,4],
+    explanation: "Rakyat berani melawan sensor (0), radio & kantor berita digunakan (3,4). Jepang tidak mendukung (1 salah), dan rakyat tidak menunggu restu (2 salah)."
+  },
+  {
+    id:27,
+    description: "Pembentukan pemerintah daerah pasca-kemerdekaan — tujuan & aktor.",
+    question: "27. Benar atau Salah: pernyataan tentang pembentukan pemerintah daerah awal Indonesia?",
+    type: "multi",
+    options: [
+      "Panitia Kecil pembentukan pemerintah daerah dipimpin oleh Otto Iskandardinata.",
+      "Hasil rapat PPKI pada 19 Agustus 1945 memutuskan Indonesia dibagi menjadi tujuh provinsi.",
+      "Pembentukan pemerintah daerah bertujuan menggerakkan partisipasi rakyat mempertahankan kemerdekaan."
+    ],
+    correct: [0,2], // 1 may be true per PPKI but PDF indicated? We'll mark 1 uncertain -> keep false per source
+    explanation: "Pernyataan 1 & 3 benar. (Panitia kecil dipimpin Otto; pembentukan daerah untuk mobilisasi rakyat). Pernyataan 2 tidak tepat di konteks ini."
+  },
+  {
+    id:28,
+    description: "Maklumat Pemerintah 3 November 1945 & kebijakan multipartai awal RI.",
+    question: "28. Tindakan yang menunjukkan dukungan pemerintah terhadap sistem multipartai? (lebih dari satu)",
+    type: "multi",
+    options: [
+      "Pemerintah mengeluarkan Maklumat 3 November 1945.",
+      "BP-KNIP mengusulkan kebebasan mendirikan partai politik.",
+      "Pembatalan keputusan pembentukan partai tunggal oleh PPKI.",
+      "Pembentukan Masyumi oleh rakyat.",
+      "Pembentukan PNI sebagai partai tunggal tetap dilaksanakan."
+    ],
+    correct: [0,1,2,3],
+    explanation: "Tindakan 0-3 menunjukkan dukungan bagi multipartai. Pernyataan 5 salah karena partai tunggal dibatalkan."
+  },
+  {
+    id:29,
+    description: "Pertempuran Lima Hari di Semarang (Oktober 1945) — konteks & kontroversi.",
+    question: "29. Setuju atau Tidak Setuju: pernyataan terkait Pertempuran Lima Hari di Semarang?",
+    type: "multi",
+    options: [
+      "Pertempuran terjadi pada Oktober 1945.",
+      "Penyebab utama adalah perebutan gudang senjata antara Jepang dan pasukan Indonesia.",
+      "Dokter Karladi wafat karena dibunuh oleh pejuang Indonesia."
+    ],
+    correct: [0,1], // third is historically sensitive/false per many sources
+    explanation: "Pertempuran berlangsung Oktober 1945 dan berhubungan dengan perebutan gudang senjata (0,1 benar). Pernyataan 3 tidak didukung fakta umum."
+  },
+  {
+    id:30,
+    description: "Diplomasi pasca-proklamasi — usaha mempertahankan kemerdekaan melalui jalur internasional.",
+    question: "30. Bukti upaya menyelamatkan kemerdekaan melalui diplomasi? (lebih dari satu)",
+    type: "multi",
+    options: [
+      "Membawa masalah Indonesia ke sidang PBB.",
+      "Mengirim delegasi ke perundingan Linggajati.",
+      "Mengadakan perundingan Renville dengan Belanda.",
+      "Mengusir tentara Sekutu dari Surabaya dengan senjata.",
+      "Melakukan pertempuran Medan Area melawan Belanda."
+    ],
+    correct: [0,1,2],
+    explanation: "Upaya diplomatik tercakup pada membawa isu ke forum internasional dan perundingan Linggajati & Renville (0,1,2). Tindakan militer (3,4) adalah langkah non-diplomatik."
+  },
+  {
+    id:31,
+    description: "Masa Demokrasi Liberal (1950-1959): multipartai, pentadbiran parlemen, dampak politik.",
+    question: "31. Dampak penerapan sistem multipartai pada Demokrasi Liberal? (lebih dari satu)",
+    type: "multi",
+    options: [
+      "Mosi tidak percaya sering diajukan di parlemen.",
+      "Pemerintahan berjalan stabil tanpa gejolak politik.",
+      "Pemilu 1955 dapat dilaksanakan untuk memilih wakil rakyat.",
+      "Presiden Sukarno menjadi pemimpin partai politik terbesar.",
+      "Kabinet sering mengalami pergantian sebelum masa tugas habis."
+    ],
+    correct: [0,2,4],
+    explanation: "Multipartai menyebabkan seringnya mosi tidak percaya, terselenggaranya Pemilu 1955, dan kabinet sering berganti. Pilihan 2&4 keliru kontekstual."
+  },
+  {
+    id:32,
+    description: "Kebijakan 'Gerakan Benteng' untuk memperkuat kewirausahaan bumiputra.",
+    question: "32. Tujuan Gerakan Benteng adalah:",
+    type: "single",
+    options: [
+      "A. Memberi lisensi impor kepada orang-orang berpotensi wirausaha.",
+      "B. Membangun kewirausahaan bumiputra agar mampu membentengi perekonomian negara.",
+      "C. Menciptakan kerja sama antara pengusaha bumiputra dan nonbumiputra.",
+      "D. Merundingkan permasalahan finansial (Finek) dengan Belanda.",
+      "E. Menanggulangi defisit akibat naiknya utang negara."
+    ],
+    correct: 1,
+    explanation: "Jawaban B benar — Gerakan Benteng bertujuan memberdayakan pengusaha bumiputra."
+  },
+  {
+    id:33,
+    description: "Blokade ekonomi Belanda pasca-kemerdekaan: motif politik & ekonomi.",
+    question: "33. Mengapa Belanda melakukan aksi blokade ekonomi pada awal kemerdekaan?",
+    type: "single",
+    options: [
+      "A. Belanda menginginkan mata uang NICA tetap berlaku di Indonesia.",
+      "B. Belanda ingin melindungi hasil perkebunan miliknya di Indonesia.",
+      "C. Indonesia membatasi perdagangan dengan pemerintah Belanda.",
+      "D. Kegiatan ekspor impor difokuskan untuk negara selain Belanda.",
+      "E. Investor asing mengambil alih seluruh kegiatan ekonomi."
+    ],
+    correct: 1,
+    explanation: "Jawaban B paling tepat — blokade terkait kepentingan melindungi aset/perkebunan Belanda dan menekan Pemerintah RI."
+  },
+  {
+    id:34,
+    description: "Politik Mercusuar Sukarno: simbolisme internasional lewat acara besar (Konferensi Asia-Afrika, Asian Games).",
+    question: "34. Setuju/Tidak Setuju: Pernyataan berikut terkait Politik Mercusuar",
+    type: "multi",
+    options: [
+      "Konferensi Asia-Afrika di Bandung merupakan bagian dari Politik Mercusuar.",
+      "Tujuan utama Politik Mercusuar adalah membatasi peran presiden dalam pemerintahan.",
+      "Asian Games di Jakarta menjadi salah satu agenda Politik Mercusuar."
+    ],
+    correct: [0,2],
+    explanation: "Konferensi & Asian Games termasuk agenda Politik Mercusuar (0,2). Tujuan membatasi peran presiden tidak relevan (1 salah)."
+  },
+  {
+    id:35,
+    description: "Perbedaan orientasi politik luar negeri Orde Lama vs Orde Baru — fokus pembangunan & normalisasi hubungan luar.",
+    question: "35. Mengapa Orde Baru bergeser ke kebijakan pragmatis dan berorientasi pembangunan?",
+    type: "single",
+    options: [
+      "A. Untuk bergabung dengan blok Timur penuh.",
+      "B. Kebutuhan bantuan ekonomi & investasi dari negara Barat.",
+      "C. Tekanan internasional dari PBB.",
+      "D. Dorongan negara nonblok agar Indonesia jadi pemimpin gerakan antiimperialis.",
+      "E. Pengaruh komunisme makin kuat pasca-Perang Dingin."
+    ],
+    correct: 1,
+    explanation: "Jawaban B benar — kebutuhan bantuan ekonomi dan investasi menjadi faktor utama pergeseran kebijakan luar negeri Orde Baru."
+  },
+  {
+    id:36,
+    description: "Karakter kebijakan luar negeri Orde Baru: pemulihan hubungan bilateral, peran di ASEAN, pragmatisme.",
+    question: "36. Karakter kebijakan luar negeri Orde Baru? (lebih dari satu)",
+    type: "multi",
+    options: [
+      "Mengedepankan pendekatan konfrontatif terhadap negara Barat.",
+      "Memprioritaskan pemulihan hubungan diplomatik dengan negara Asia Tenggara.",
+      "Memainkan peran sentral dalam pembentukan & penguatan ASEAN.",
+      "Sepenuhnya mengabaikan prinsip bebas aktif demi kerja sama bilateral.",
+      "Berorientasi mencari bantuan ekonomi & investasi dari negara Barat."
+    ],
+    correct: [1,2,4],
+    explanation: "Benar: prioritas hubungan Asia Tenggara, peran di ASEAN, dan orientasi mencari investasi Barat. Orde Baru tidak konfrontatif (0 salah) dan tetap mempertahankan prinsip bebas aktif secara formal (3 salah)."
+  },
+  {
+    id:37,
+    description: "Ringkasan: pergeseran kebijakan luar negeri Orde Baru (konfrontatif -> pragmatis).",
+    question: "37. Benar atau Salah: pernyataan berikut?",
+    type: "multi",
+    options: [
+      "Indonesia masa Orde Baru memilih berpihak pada satu blok selama Perang Dingin untuk mendapat dukungan.",
+      "Salah satu prioritas Orde Baru adalah menciptakan stabilitas & kerja sama di Asia Tenggara.",
+      "Kebijakan luar negeri Orde Baru bergeser dari konfrontatif menjadi lebih pragmatis."
+    ],
+    correct: [1,2],
+    explanation: "Pernyataan 2 & 3 benar. Pernyataan 1 salah karena Orde Baru cenderung bersikap bebas-aktif & pragmatis, bukan memilih satu blok penuh."
+  },
+  {
+    id:38,
+    description: "Krisis 1998 & peran mahasiswa sebagai penggerak reformasi yang menuntut Soeharto mundur.",
+    question: "38. Benar atau Salah: peran pelajar & mahasiswa dalam proses lahirnya reformasi?",
+    type: "multi",
+    options: [
+      "Mahasiswa mengambil alih sistem pemerintahan demokratis.",
+      "Mahasiswa menjadi penggerak dalam mendorong perubahan sistem politik.",
+      "Gerakan mahasiswa 1998 merupakan tonggak perubahan periode pemerintahan Indonesia."
+    ],
+    correct: [1,2],
+    explanation: "Pernyataan 2 & 3 benar: mahasiswa penggerak besar & 1998 menjadi tonggak reformasi. Pernyataan 1 berlebihan (mereka mempengaruhi tapi tidak 'mengambil alih sistem pemerintahan')."
+  },
+  {
+    id:39,
+    description: "Langkah awal pemerintahan B.J. Habibie untuk perbaikan ekonomi pasca-Orde Baru.",
+    question: "39. Langkah-langkah yang diambil Habibie untuk memperbaiki ekonomi? (lebih dari satu)",
+    type: "multi",
+    options: [
+      "Memperbaiki kinerja ekspor.",
+      "Melakukan privatisasi BUMN.",
+      "Melakukan reformasi perbankan.",
+      "Memberikan bantuan langsung tunai.",
+      "Menetapkan undang-undang antimonopoli."
+    ],
+    correct: [0,2],
+    explanation: "Langkah penting termasuk perbaikan ekspor dan reformasi perbankan. Privatisasi serta program bantuan lain ada dalam konteks masa berbeda; undang-undang antimonopoli bukan langkah utama awal Habibie."
+  },
+  {
+    id:40,
+    description: "Kebijakan BBM era Joko Widodo — alasan penyesuaian subsidi dan anggaran.",
+    question: "40. Apa tujuan pemerintah menaikkan harga BBM?",
+    type: "single",
+    options: [
+      "A. Menghindari pemanasan global.",
+      "B. Mencanangkan program go green.",
+      "C. Menyesuaikan harga minyak dunia.",
+      "D. Menekan jumlah kendaraan bermotor.",
+      "E. Mengalihkan subsidi pada sektor produktif."
+    ],
+    correct: 4, // E
+    explanation: "Tujuan kebijakan seringkali untuk mengalihkan subsidi kepada sektor produktif dan memperbaiki alokasi anggaran (E). Penyesuaian terhadap harga dunia juga relevan, namun dalam konteks soal PDF jawaban E diberikan."
+  }
+]; // end questions
+
+/* ============== UI HELPERS =============== */
+const startBtn = document.getElementById('startBtn');
+const studentInput = document.getElementById('studentName');
+const startScreen = document.getElementById('startScreen');
+const quizScreen = document.getElementById('quizScreen');
+const endScreen = document.getElementById('endScreen');
+const qDesc = document.getElementById('qDesc');
+const qText = document.getElementById('qText');
+const optionsWrap = document.getElementById('options');
+const explanationBox = document.getElementById('explanation');
+const nextBtn = document.getElementById('nextBtn');
+const submitMulti = document.getElementById('submitMulti');
+const multiSubmitWrap = document.getElementById('multiSubmitWrap');
+const curIndex = document.getElementById('curIndex');
+const progBar = document.getElementById('progBar');
+const quitBtn = document.getElementById('quitBtn');
+
+/* ============ START QUIZ ================ */
+startBtn.addEventListener('click', () => {
+  const name = studentInput.value.trim();
+  if(!name){
+    alert('Masukkan nama siswa terlebih dahulu.');
+    studentInput.focus();
+    return;
+  }
+  studentName = name;
+  startScreen.style.display = 'none';
+  quizScreen.style.display = 'block';
+  startedAt = new Date();
+  current = 0;
+  score = 0;
+  loadQuestion();
+});
+
+quitBtn.addEventListener('click', () => {
+  if(confirm('Batalkan kuis dan kembali ke awal?')) location.reload();
+});
+
+/* ============ LOAD QUESTION ============== */
+function loadQuestion(){
+  const q = questions[current];
+  // update progress
+  curIndex.innerText = (current+1);
+  const percent = Math.round(((current)/questions.length) * 100);
+  progBar.style.width = percent + '%';
+
+  // reset
+  explanationBox.style.display = 'none';
+  explanationBox.innerHTML = '';
+  nextBtn.style.display = 'none';
+  multiSubmitWrap.style.display = 'none';
+  optionsWrap.innerHTML = '';
+
+  qDesc.innerText = q.description || '';
+  qText.innerText = q.question;
+
+  if(q.type === 'single' || q.type === 'tf'){
+    // render as clickable buttons
+    q.options.forEach((opt, idx) => {
+      const b = document.createElement('button');
+      b.className = 'opt-btn';
+      b.innerText = opt;
+      b.dataset.idx = idx;
+      b.addEventListener('click', () => handleSingleChoice(idx, b));
+      optionsWrap.appendChild(b);
+    });
+  } else if(q.type === 'multi'){
+    // render checkboxes + show submit
+    q.options.forEach((opt, idx) => {
+      const wrapper = document.createElement('label');
+      wrapper.style.display = 'flex';
+      wrapper.style.alignItems = 'center';
+      wrapper.style.gap = '10px';
+      wrapper.style.padding = '8px';
+      wrapper.style.borderRadius = '8px';
+      wrapper.style.border = '1px solid #eef3f8';
+      wrapper.style.cursor = 'pointer';
+      wrapper.style.background = '#fff';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.dataset.idx = idx;
+      cb.style.width = '18px';
+      cb.style.height = '18px';
+      const span = document.createElement('div');
+      span.innerText = opt;
+      wrapper.appendChild(cb);
+      wrapper.appendChild(span);
+      optionsWrap.appendChild(wrapper);
+    });
+    multiSubmitWrap.style.display = 'block';
+  }
+}
+
+/* ============ HANDLERS ================ */
+function handleSingleChoice(selectedIdx, btnElem){
+  // disable all options
+  const btns = optionsWrap.querySelectorAll('.opt-btn');
+  btns.forEach(b => {
+    b.classList.add('disabled');
+    b.disabled = true;
+  });
+
+  const q = questions[current];
+  // mark correct and wrong
+  const correctIdx = q.correct;
+  btns.forEach(b => {
+    const i = Number(b.dataset.idx);
+    if(i === correctIdx) b.classList.add('correct');
+    if(i === selectedIdx && i !== correctIdx) b.classList.add('wrong');
+  });
+
+  // award score
+  if(selectedIdx === correctIdx) {
+    score += 1;
+    explanationBox.innerHTML = `<div class="ok">Benar ✔</div><div style="margin-top:8px">${q.explanation}</div>`;
+  } else {
+    explanationBox.innerHTML = `<div class="bad">Salah ✖</div><div style="margin-top:8px">${q.explanation}</div>`;
+  }
+  explanationBox.style.display = 'block';
+  nextBtn.style.display = 'inline-block';
+  // scroll explanation into view (mobile)
+  explanationBox.scrollIntoView({behavior:'smooth'});
+}
+
+submitMulti.addEventListener('click', () => {
+  const q = questions[current];
+  const checks = optionsWrap.querySelectorAll('input[type="checkbox"]');
+  const selected = [];
+  checks.forEach(cb => {
+    if(cb.checked) selected.push(Number(cb.dataset.idx));
+  });
+  if(selected.length === 0){
+    alert('Pilih minimal satu opsi sebelum kirim.');
+    return;
+  }
+  // disable further interaction
+  checks.forEach(cb => cb.disabled = true);
+
+  const correctArr = Array.isArray(q.correct) ? q.correct.slice().sort((a,b)=>a-b) : [q.correct];
+  const selSorted = selected.slice().sort((a,b)=>a-b);
+
+  // check if selected exactly matches correct array
+  const isExact = (selSorted.length === correctArr.length) && selSorted.every((v,i)=>v===correctArr[i]);
+
+  // visually mark items
+  const wrappers = optionsWrap.querySelectorAll('label');
+  wrappers.forEach((w, idx) => {
+    const cb = w.querySelector('input');
+    if(correctArr.includes(idx)){
+      w.style.background = '#e6f4ea';
+      w.style.borderColor = '#b7e1c8';
+    }
+    if(cb.checked && !correctArr.includes(idx)){
+      w.style.background = '#fff0f0';
+      w.style.borderColor = '#f0b4b4';
+    }
+  });
+
+  if(isExact){
+    score += 1;
+    explanationBox.innerHTML = `<div class="ok">Benar ✔ (Kriteria lengkap)</div><div style="margin-top:8px">${q.explanation}</div>`;
+  } else {
+    explanationBox.innerHTML = `<div class="bad">Jawaban belum lengkap atau ada jawaban salah ✖</div><div style="margin-top:8px">${q.explanation}</div>`;
+  }
+  explanationBox.style.display = 'block';
+  nextBtn.style.display = 'inline-block';
+  explanationBox.scrollIntoView({behavior:'smooth'});
+});
+
+/* ============ NEXT / FINISH ============== */
+nextBtn.addEventListener('click', () => {
+  current++;
+  if(current < questions.length){
+    loadQuestion();
+    // hide Next until answered
+    nextBtn.style.display = 'none';
+  } else {
+    finishQuiz();
+  }
+});
+
+function finishQuiz(){
+  quizScreen.style.display = 'none';
+  endScreen.style.display = 'block';
+  const durationMs = new Date() - startedAt;
+  const minutes = Math.floor(durationMs/60000);
+  const seconds = Math.floor((durationMs%60000)/1000);
+  const total = questions.length;
+  const percent = Math.round((score/total)*100);
+
+  progBar.style.width = '100%';
+
+  endScreen.innerHTML = `
+    <div class="card" style="padding:20px">
+      <h2>Hasil Kuis</h2>
+      <p>Nama: <strong>${escapeHtml(studentName)}</strong></p>
+      <p>Skor: <strong>${score}</strong> dari <strong>${total}</strong> (${percent}%)</p>
+      <p>Waktu: <strong>${minutes} menit ${seconds} detik</strong></p>
+      <div style="margin-top:12px" class="center">
+        <button id="downloadBtn" class="btn">Simpan & Kirim ke Google Sheet</button>
+        <button id="restartBtn" class="btn" style="background:#6b7280;margin-left:8px">Ulangi</button>
+      </div>
+      <div style="margin-top:10px" class="small">Catatan: klik "Simpan & Kirim" untuk mengirim hasil ke Google Sheet.</div>
+    </div>
+  `;
+
+  document.getElementById('downloadBtn').addEventListener('click', sendResult);
+  document.getElementById('restartBtn').addEventListener('click', ()=> location.reload());
+}
+
+/* ============ SEND RESULT TO GOOGLE SHEET ============== */
+async function sendResult(){
+  const total = questions.length;
+  const percent = Math.round((score/total)*100);
+  const payload = {
+    name: studentName,
+    score: score,
+    total: total,
+    percent: percent,
+    datetime: (new Date()).toISOString()
+  };
+
+  // feedback to user
+  try {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerText = 'Mengirim...';
+
+    const res = await fetch(WEB_APP_URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if(res.ok){
+      btn.innerText = 'Berhasil Terkirim ✅';
+      alert('Hasil berhasil dikirim ke Google Sheet.');
+    } else {
+      btn.innerText = 'Gagal Terkirim (Klik lagi)';
+      const text = await res.text();
+      console.error('Response not ok:', res.status, text);
+      alert('Gagal mengirim. Periksa konfigurasi Web App. (lihat console)');
+      btn.disabled = false;
+    }
+  } catch(err){
+    console.error(err);
+    alert('Terjadi kesalahan saat mengirim: ' + err.message + '\nPeriksa konfigurasi Web App & koneksi.');
+    const btn2 = document.querySelector('#downloadBtn');
+    if(btn2){ btn2.disabled = false; btn2.innerText = 'Simpan & Kirim ke Google Sheet'; }
+  }
+}
+
+/* ============ UTIL ============== */
+function escapeHtml(unsafe) {
+  return unsafe.replace(/[&<"'>]/g, function(m) {
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]);
+  });
+}
+
+/* load first question only when started by user */
+</script>
 </body>
 </html>
